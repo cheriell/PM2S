@@ -6,7 +6,7 @@ from data.dataset_beat import BeatDataset
 
 class Pm2sDataModule(pl.LightningDataModule):
 
-    def __init__(self, args, feature='beat'):
+    def __init__(self, args, feature='beat', full_train=True):
         super().__init__()
         
         # Parameters from input arguments
@@ -15,6 +15,7 @@ class Pm2sDataModule(pl.LightningDataModule):
         self.A_MAPS = args.A_MAPS
         self.CPM = args.CPM
         self.feature = feature
+        self.full_train = full_train
 
     def _get_dataset(self, split):
         if self.feature == 'beat':
@@ -22,7 +23,10 @@ class Pm2sDataModule(pl.LightningDataModule):
         return dataset
 
     def train_dataloader(self):
-        dataset = self._get_dataset(split='train')
+        if self.full_train:
+            dataset = self._get_dataset(split='all')
+        else:
+            dataset = self._get_dataset(split='train')
         sampler = torch.utils.data.sampler.RandomSampler(dataset)
         dataloader = torch.utils.data.dataloader.DataLoader(
             dataset,

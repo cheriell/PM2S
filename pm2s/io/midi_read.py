@@ -19,5 +19,5 @@ def read_note_sequence(midi_file):
     for instrument in midi_data.instruments:
         notes.extend(instrument.notes)
     notes = sorted(notes, key=lambda x: x.start)
-    note_seq = np.array([[note.pitch, note.start, note.end, note.velocity] for note in notes])
+    note_seq = np.array([[note.pitch, note.start, note.end - note.start, note.velocity] for note in notes])
     return note_seq

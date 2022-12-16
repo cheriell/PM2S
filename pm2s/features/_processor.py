@@ -5,7 +5,7 @@ class MIDIProcessor(object):
     Abstract base class for processing MIDI data.
     """
     
-    def __init__(self, model_checkpoint=None, **kwargs):
+    def __init__(self, model_state_dict_path=None, **kwargs):
         """
         Parameters
         ----------
@@ -13,9 +13,10 @@ class MIDIProcessor(object):
         """
         self._kwargs = kwargs
 
-        self.load_from_checkpoint(model_checkpoint)
+        self.load(model_state_dict_path)
+        self._model.eval()
 
-    def load_from_checkpoint(self, path):
+    def load(self, model_state_dict_path):
         """
         Load the processor from a model checkpoint file.
 

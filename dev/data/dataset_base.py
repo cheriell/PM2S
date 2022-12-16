@@ -22,7 +22,10 @@ class BaseDataset(torch.utils.data.Dataset):
 
         # Get metadata by split
         metadata = pd.read_csv('metadata/metadata.csv')
-        self.metadata = metadata[metadata['split'] == split]
+        if split == 'all':
+            self.metadata = metadata
+        else:
+            self.metadata = metadata[metadata['split'] == split]
         if not from_asap:
             self.metadata = self.metadata[self.metadata['source'] != 'ASAP']
         self.metadata.reset_index(inplace=True)
@@ -37,7 +40,7 @@ class BaseDataset(torch.utils.data.Dataset):
         self.dataaug = DataAugmentation()
 
     def __len__(self):
-        if self.split == 'train':
+        if self.split == 'train' or self.split == 'all':
             # constantly update 200 steps per epoch, not related to training dataset size
             return batch_size * len(gpus) * 200
 
@@ -50,7 +53,7 @@ class BaseDataset(torch.utils.data.Dataset):
 
     def _sample_row(self, idx):
         # Sample one row from the metadata
-        if self.split == 'train':
+        if self.split == 'train' or self.split == 'all':
             piece_id = random.choice(list(self.piece2row.keys()))   # random sampling by piece
             row_id = random.choice(self.piece2row[piece_id])
         elif self.split == 'valid':
@@ -67,11 +70,11 @@ class BaseDataset(torch.utils.data.Dataset):
         note_sequence, annotations = pickle.load(open(str(Path(self.feature_folder, row['feature_file'])), 'rb'))
 
         # Data augmentation
-        if self.split == 'train':
+        if self.split == 'train' or self.split == 'all':
             note_sequence, annotations = self.dataaug(note_sequence, annotations)
 
         # Randomly sample a segment that is at most max_length long
-        if self.split == 'train':
+        if self.split == 'train' or self.split == 'all':
             start_idx = random.randint(0, len(note_sequence)-1)
             end_idx = start_idx + max_length
         elif self.split == 'valid':

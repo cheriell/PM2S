@@ -10,7 +10,7 @@ from configs import gpus
 
 def train(args):
     # Data
-    data_module = Pm2sDataModule(args, feature=args.feature)
+    data_module = Pm2sDataModule(args, feature=args.feature, full_train=args.full_train)
 
     # Model
     model = BeatModule()
@@ -46,6 +46,7 @@ if __name__ == '__main__':
     parser.add_argument('--A_MAPS', type=str, help='A_MAPS dataset directory.')
     parser.add_argument('--CPM', type=str, help='CPM dataset directory.')
     parser.add_argument('--feature', type=str, help='Feature type.')
+    parser.add_argument('--full_train', type=bool, help='Training with the whole dataset or not (only the training set).')
 
     args = parser.parse_args()
 

@@ -32,4 +32,21 @@ python3 train.py \
     --ASAP $ASAP \
     --A_MAPS $A_MAPS \
     --CPM $CPM \
-    --feature 'beat'
+    --feature 'beat' \
+    --full_train True
+
+# # ========================================================
+# # Model save model state dict
+# # ========================================================
+# python3 save_model.py \
+#     --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-draft/mlruns/1/4e6c6172da074a3ca97fbb569737cc03/checkpoints/epoch=47-val_loss=2.13-val_f1=0.92.ckpt \
+#     --model_save_path ../_model_state_dicts/beat/RNNJointBeatModel.pth \
+#     --feature 'beat'
+
+
+# # ========================================================
+# # Model evaluation
+# # ========================================================
+# python3 evaluation.py \
+#     --ACPAS $ACPAS \
+#     --feature 'beat'
