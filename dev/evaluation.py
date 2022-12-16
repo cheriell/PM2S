@@ -43,6 +43,8 @@ if __name__ == '__main__':
     parser.add_argument('--ACPAS', type=str, help='Path to the ACPAS dataset.')
     parser.add_argument('--feature', type=str, help='Feature type.')
 
+    parser.add_argument('--model_state_dict_path_beat', type=str, default='../_model_state_dicts/beat/RNNJointBeatModel.pth', help='Path to the model state dict.')
+
     args = parser.parse_args()
 
     evaluate_beat(args)
