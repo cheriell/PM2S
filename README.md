@@ -2,7 +2,7 @@
 
 This is the official implementation for our ISMIR 2022 paper [Performance MIDI-to-Score Conversion by Neural Beat Tracking](https://www.turing.ac.uk/research/publications/performance-midi-score-conversion-neural-beat-tracking).
 
-(Pre-trained model to be released, training script to be completed.)
+(Pre-trained model & training script to be updated by 5th February)
 
 ## Environments
 
