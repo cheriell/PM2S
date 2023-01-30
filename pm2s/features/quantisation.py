@@ -5,19 +5,20 @@ from pm2s.features._processor import MIDIProcessor
 from pm2s.models.quantisation import RNNJointQuantisationModel
 from pm2s.io.midi_read import read_note_sequence
 from pm2s.features.beat import RNNJointBeatProcessor
-from pm2s.constants import N_per_beat
+from pm2s.constants import N_per_beat, tolerance
 
 
 class RNNJointQuantisationProcessor(MIDIProcessor):
 
-    def __init__(self, model_checkpoint=None, **kwargs):
-        super().__init__(model_checkpoint, **kwargs)
+    def __init__(self, model_state_dict_path='_model_state_dicts/quantisation/RNNJointQuantisationModel.pth', **kwargs):
+        super().__init__(model_state_dict_path, **kwargs)
 
-    def load_from_checkpoint(self, path):
-        if path:
-            self._model = RNNJointQuantisationModel.load_state_dict(path, beat_model_checkpoint=self._kwargs['beat_model_checkpoint'])
+    def load(self, state_dict_path):
+        if state_dict_path:
+            self._model = RNNJointQuantisationModel()
+            self._model.load_state_dict(torch.load(state_dict_path))
         else:
-            self._model = RNNJointQuantisationModel(self._kwargs['beat_model_checkpoint'])
+            self._model = RNNJointQuantisationModel()
 
     def process(self, midi_file, **kwargs):
         # Read MIDI file into note sequence
@@ -28,8 +29,8 @@ class RNNJointQuantisationProcessor(MIDIProcessor):
         beat_probs, downbeat_probs, onset_position_probs, note_value_probs = self._model(x)
 
         # Post-processing
-        onset_positions_idx = onset_position_probs[0].topk(1, dim=1)[1].squeeze(1) # (n_notes,)
-        note_values_idx = note_value_probs[0].topk(1, dim=1)[1].squeeze(1) # (n_notes,)
+        onset_positions_idx = onset_position_probs[0].topk(1, dim=0)[1].squeeze(0) # (n_notes,)
+        note_values_idx = note_value_probs[0].topk(1, dim=0)[1].squeeze(0) # (n_notes,)
 
         onset_positions_idx = onset_positions_idx.detach().numpy()
         note_values_idx = note_values_idx.detach().numpy()
@@ -38,18 +39,19 @@ class RNNJointQuantisationProcessor(MIDIProcessor):
         downbeat_probs = downbeat_probs.squeeze(0).detach().numpy()
         onsets = note_seq[:, 1]
 
-        onset_positions, note_values = self.pps(onset_positions_idx, note_values_idx, beat_probs, downbeat_probs, onsets)
+        beats, onset_positions, note_values = self.pps(onset_positions_idx, note_values_idx, beat_probs, downbeat_probs, onsets)
 
-        return onset_positions, note_values
+        return beats, onset_positions, note_values
 
     def pps(self, onset_positions_idx, note_values_idx, beat_probs, downbeat_probs, onsets):
         # post-processing
         # Convert onset position and note value indexes to actual values
         # Use predicted beat as a reference
 
-        beats = RNNJointBeatProcessor.pps_dp(beat_probs, downbeat_probs, onsets)
-        # TODO: trim beats to fill the whole song
+        # get beats prediction from beat_probs and downbeat_probs
+        beats = RNNJointBeatProcessor.pps(beat_probs, downbeat_probs, onsets)
 
+        # get predicted onset positions and note values in beats
         onset_positions_raw = onset_positions_idx / N_per_beat
         note_values_raw = note_values_idx / N_per_beat
 
@@ -68,6 +70,4 @@ class RNNJointQuantisationProcessor(MIDIProcessor):
             note_values[note_idx] = note_values_raw[note_idx]
             note_idx += 1
 
-        # TODO: trim onset positions and note values to fill the whole song
-
-        return onset_positions, note_values
+        return beats, onset_positions, note_values

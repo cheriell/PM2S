@@ -8,7 +8,7 @@ from pm2s.models.beat import RNNJointBeatModel
 
 class RNNJointQuantisationModel(nn.Module):
 
-    def __init__(self, beat_model_checkpoint, hidden_size=512):
+    def __init__(self, beat_model_checkpoint="_model_state_dicts/beat/RNNJointBeatModel.pth", hidden_size=512):
 
         super().__init__()
 
@@ -26,7 +26,7 @@ class RNNJointQuantisationModel(nn.Module):
         # load beat model and freeze
         # debugging
         self.beat_model = RNNJointBeatModel()
-        # self.beat_model = RNNJointBeatModel.load_state_dict(beat_model_checkpoint)
+        self.beat_model.load_state_dict(torch.load(beat_model_checkpoint))
         for param in self.beat_model.parameters():
             param.requires_grad = False
 
@@ -45,6 +45,9 @@ class RNNJointQuantisationModel(nn.Module):
         x_concat_onset = torch.cat((x_conv_onset, y_beat.unsqueeze(2), y_value), dim=2) # (batch_size, seq_len, hidden_size + 1 + noteValueVocab)
         x_gru_onset = self.gru_onset(x_concat_onset) # (batch_size, seq_len, hidden_size)
         y_onset = self.out_onset(x_gru_onset) # (batch_size, seq_len, onsetVocab)
+
+        y_onset = y_onset.transpose(1, 2) # (batch_size, onsetVocab, seq_len)
+        y_value = y_value.transpose(1, 2) # (batch_size, noteValueVocab, seq_len)
 
         return y_beat, y_downbeat, y_onset, y_value
 

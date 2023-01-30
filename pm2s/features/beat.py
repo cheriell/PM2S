@@ -20,7 +20,7 @@ class RNNJointBeatProcessor(MIDIProcessor):
         else:
             self._model = RNNJointBeatModel()
 
-    def process(self, midi_file, **kwargs):
+    def process(self, midi_file, tempo_range=(40, 200)):
         # Read MIDI file into note sequence
         note_seq = read_note_sequence(midi_file)
         x = torch.tensor(note_seq).unsqueeze(0)
@@ -32,12 +32,13 @@ class RNNJointBeatProcessor(MIDIProcessor):
         beat_probs = beat_probs.squeeze(0).detach().numpy()
         downbeat_probs = downbeat_probs.squeeze(0).detach().numpy()
         onsets = note_seq[:, 1]
-        beats = self.pps_dp(beat_probs, downbeat_probs, onsets)
-        
+
+        beats = self.pps(beat_probs, downbeat_probs, onsets)
+            
         return beats
 
     @staticmethod
-    def pps_dp(beat_probs, downbeat_probs, onsets, penalty=1.0):
+    def pps(beat_probs, downbeat_probs, onsets, prob_thresh=0.5, penalty=1.0):
         """
         Post-processing with dynamic programming.
 
@@ -63,8 +64,8 @@ class RNNJointBeatProcessor(MIDIProcessor):
         wlen_downbeats = (60. / min_bpm) * 8
 
         # initialize beat and downbeat thresholds
-        thresh_beats = np.ones(N_notes) * 0.5
-        thresh_downbeats = np.ones(N_notes) * 0.5
+        thresh_beats = np.ones(N_notes) * prob_thresh
+        thresh_downbeats = np.ones(N_notes) * prob_thresh
         
         l_b, r_b, l_db, r_db = 0, 0, 0, 0  # sliding window indices
         
@@ -79,8 +80,8 @@ class RNNJointBeatProcessor(MIDIProcessor):
             while r_db < N_notes and onsets[r_db] < onset + wlen_downbeats / 2:
                 r_db += 1
             # update beat and downbeat thresholds
-            thresh_beats[i] = np.max(beat_probs[l_b:r_b]) * 0.5
-            thresh_downbeats[i] = np.max(downbeat_probs[l_db:r_db]) * 0.5
+            thresh_beats[i] = np.max(beat_probs[l_b:r_b]) * prob_thresh
+            thresh_downbeats[i] = np.max(downbeat_probs[l_db:r_db]) * prob_thresh
 
         # threshold beat and downbeat probabilities
         beats = onsets[beat_probs > thresh_beats]
@@ -102,7 +103,14 @@ class RNNJointBeatProcessor(MIDIProcessor):
         beats = np.concatenate([beats, beats_to_merge])
         beats = np.sort(beats)
 
-        # ========= dynamic programming for beat prediction ====================
+        beats = RNNJointBeatProcessor.beat_complement_dp(beats, penalty)
+
+        return beats
+
+    @staticmethod
+    def beat_complement_dp(beats, penalty=1.0):
+
+        # === dynamic programming for adding out-of-note beats prediction ======
         # minimize objective function:
         #   O = sum(abs(log((t[k] - t[k-1]) / (t[k-1] - t[k-2]))))      (O1)
         #       + lam1 * insertions                                     (O2)

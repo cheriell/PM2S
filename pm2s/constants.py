@@ -41,5 +41,5 @@ keyVocabSize = len(keySharps2Name) // 2  # ignore minor keys in key signature pr
 # proposed model
 N_per_beat = 24  # 24 resolution per beat
 max_note_value = 4 * N_per_beat  # 4 beats
-omVocab = N_per_beat
-nvVocab = max_note_value
+omVocab = N_per_beat  # onset musical vocabulary size
+nvVocab = max_note_value + 1  # note value vocabulary size, 0 is ignored during training

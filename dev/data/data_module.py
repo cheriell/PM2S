@@ -3,6 +3,7 @@ import torch
 
 from configs import *
 from data.dataset_beat import BeatDataset
+from data.dataset_quantisation import QuantisationDataset
 
 class Pm2sDataModule(pl.LightningDataModule):
 
@@ -20,6 +21,8 @@ class Pm2sDataModule(pl.LightningDataModule):
     def _get_dataset(self, split):
         if self.feature == 'beat':
             dataset = BeatDataset(self.workspace, split)
+        elif self.feature == 'quantisation':
+            dataset = QuantisationDataset(self.workspace, split)
         return dataset
 
     def train_dataloader(self):
