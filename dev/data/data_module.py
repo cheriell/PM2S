@@ -4,6 +4,9 @@ import torch
 from configs import *
 from data.dataset_beat import BeatDataset
 from data.dataset_quantisation import QuantisationDataset
+from data.dataset_hand_part import HandPartDataset
+from data.dataset_key_signature import KeySignatureDataset
+from data.dataset_time_signature import TimeSignatureDataset
 
 class Pm2sDataModule(pl.LightningDataModule):
 
@@ -23,6 +26,14 @@ class Pm2sDataModule(pl.LightningDataModule):
             dataset = BeatDataset(self.workspace, split)
         elif self.feature == 'quantisation':
             dataset = QuantisationDataset(self.workspace, split)
+        elif self.feature == 'hand_part':
+            dataset = HandPartDataset(self.workspace, split)
+        elif self.feature == 'key_signature':
+            dataset = KeySignatureDataset(self.workspace, split)
+        elif self.feature == 'time_signature':
+            dataset = TimeSignatureDataset(self.workspace, split)
+        else:
+            raise ValueError('Unknown feature: {}'.format(self.feature))
         return dataset
 
     def train_dataloader(self):

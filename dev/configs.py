@@ -13,6 +13,6 @@ gpus = [0,1]
 
 # # DEBUGGING: for 1 GPU
 # batch_size = 128
-# gpus = [4]
+# gpus = [0]
 
 num_workers = 4

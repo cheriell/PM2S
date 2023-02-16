@@ -12,10 +12,6 @@ A_MAPS="/import/c4dm-05/ll307/datasets/A-MAPS_1.1"
 CPM="/import/c4dm-05/ll307/datasets/CPM"
 ACPAS="/import/c4dm-05/ll307/datasets/ACPAS-dataset"
 
-# Modify the following paths to your own evaluation tool directory
-MV2H="/import/c4dm-05/ll307/tools/MV2H/bin"
-
-
 # # ========================================================
 # # Feature preparation 
 # # ========================================================
@@ -34,7 +30,7 @@ MV2H="/import/c4dm-05/ll307/tools/MV2H/bin"
 #     --ASAP $ASAP \
 #     --A_MAPS $A_MAPS \
 #     --CPM $CPM \
-#     --feature 'beat' \
+#     --feature 'time_signature' \
 #     # --full_train
 
 
@@ -43,7 +39,6 @@ MV2H="/import/c4dm-05/ll307/tools/MV2H/bin"
 # # ========================================================
 # # Change the model_checkpoint_path to your own trained model checkpoint path, this will save the model to the default path (replacing the pre-trained model state dict)
 # python3 save_model.py \
-#     --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-draft/mlruns/3/7748838831a24d0fb332b849354851f1/checkpoints/epoch=30-val_loss=3.15-val_f1=0.88.ckpt \
-#     --feature 'beat' \
+#     --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-draft/mlruns/5/9cd46d4570eb45ca8e72052b479e7ac4/checkpoints/epoch=57-val_loss=0.23-val_f1=0.86.ckpt \
+#     --feature 'key_signature' \
 #     # --beat_model_checkpoint ../_model_state_dicts/beat/RNNJointBeatModel_fullTrain.pth
-

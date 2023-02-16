@@ -8,14 +8,27 @@ def save_model(args):
     if args.feature == 'beat':
         from modules.beat import BeatModule
         module = BeatModule.load_from_checkpoint(args.model_checkpoint_path)
-
         model_save_path = '../_model_state_dicts/beat/RNNJointBeatModel.pth'
 
     elif args.feature == 'quantisation':
         from modules.quantisation import QuantisationModule
         module = QuantisationModule.load_from_checkpoint(args.model_checkpoint_path, beat_model_checkpoint=args.beat_model_checkpoint)
-
         model_save_path = '../_model_state_dicts/quantisation/RNNJointQuantisationModel.pth'
+
+    elif args.feature == 'hand_part':
+        from modules.hand_part import HandPartModule
+        module = HandPartModule.load_from_checkpoint(args.model_checkpoint_path)
+        model_save_path = '../_model_state_dicts/hand_part/RNNHandPartModel.pth'
+
+    elif args.feature == 'time_signature':
+        from modules.time_signature import TimeSignatureModule
+        module = TimeSignatureModule.load_from_checkpoint(args.model_checkpoint_path)
+        model_save_path = '../_model_state_dicts/time_signature/RNNTimeSignatureModel.pth'
+
+    elif args.feature == 'key_signature':
+        from modules.key_signature import KeySignatureModule
+        module = KeySignatureModule.load_from_checkpoint(args.model_checkpoint_path)
+        model_save_path = '../_model_state_dicts/key_signature/RNNKeySignatureModel.pth'
 
     else:
         raise ValueError('Invalid feature type.')

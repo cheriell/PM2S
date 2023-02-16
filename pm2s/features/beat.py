@@ -12,7 +12,7 @@ class RNNJointBeatProcessor(MIDIProcessor):
 
     def __init__(self, model_state_dict_path='_model_state_dicts/beat/RNNJointBeatModel.pth', **kwargs):
         super().__init__(model_state_dict_path, **kwargs)
-
+                         
     def load(self, state_dict_path):
         if state_dict_path:
             self._model = RNNJointBeatModel()
@@ -20,7 +20,7 @@ class RNNJointBeatProcessor(MIDIProcessor):
         else:
             self._model = RNNJointBeatModel()
 
-    def process(self, midi_file, tempo_range=(40, 200)):
+    def process(self, midi_file, **kwargs):
         # Read MIDI file into note sequence
         note_seq = read_note_sequence(midi_file)
         x = torch.tensor(note_seq).unsqueeze(0)

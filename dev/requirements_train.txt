@@ -1,0 +1,6 @@
+torch==1.12.1
+pretty-midi==0.2.9
+numpy==1.19.1
+pytorch-lightning==1.6.0
+pandas==1.2.3
+scikit-learn==0.24.1

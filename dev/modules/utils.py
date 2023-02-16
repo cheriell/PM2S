@@ -49,11 +49,11 @@ def f_measure_framewise(y, y_hat):
 def classification_report_framewise(y, y_hat):
     report = classification_report(y.tolist(), y_hat.tolist(), output_dict=True)
 
-    prec_macro = report['macro avg']['precision']
-    rec_macro = report['macro avg']['recall']
-    f1_macro = report['macro avg']['f1-score']
-    prec_weighted = report['weighted avg']['precision']
-    rec_weighted = report['weighted avg']['recall']
-    f1_weighted = report['weighted avg']['f1-score']
+    prec_macro = np.nan_to_num(report['macro avg']['precision'])
+    rec_macro = np.nan_to_num(report['macro avg']['recall'])
+    f1_macro = np.nan_to_num(report['macro avg']['f1-score'])
+    prec_weighted = np.nan_to_num(report['weighted avg']['precision'])
+    rec_weighted = np.nan_to_num(report['weighted avg']['recall'])
+    f1_weighted = np.nan_to_num(report['weighted avg']['f1-score'])
     
     return prec_macro, rec_macro, f1_macro, prec_weighted, rec_weighted, f1_weighted

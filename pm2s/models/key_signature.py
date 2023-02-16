@@ -24,5 +24,6 @@ class RNNKeySignatureModel(nn.Module):
         x = self.convs(x) # (batch_size, seq_len, hidden_size)
         x = self.gru(x) # (batch_size, seq_len, hidden_size)
         y = self.out(x) # (batch_size, seq_len, keyVocabSize)
+        y = y.transpose(1, 2) # (batch_size, keyVocabSize, seq_len)
 
         return y

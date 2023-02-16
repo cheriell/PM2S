@@ -16,9 +16,9 @@ class RNNTimeSignatureModel(nn.Module):
 
         self.gru = GRUBlock(in_features=hidden_size)
 
-        self.out_td = LinearOutput(in_features=hidden_size, out_features=tsDenoVocabSize, activation_type='softmax')
         self.out_tn = LinearOutput(in_features=hidden_size, out_features=tsNumeVocabSize, activation_type='softmax')
-
+        self.out_td = LinearOutput(in_features=hidden_size, out_features=tsDenoVocabSize, activation_type='softmax')
+        
     def forward(self, x):
         # x: (batch_size, seq_len, len(features)==4)
         x = encode_note_sequence(x)
@@ -27,8 +27,11 @@ class RNNTimeSignatureModel(nn.Module):
 
         x_gru = self.gru(x)  # (batch_size, seq_len, hidden_size)
 
-        y_td = self.out_td(x_gru)  # (batch_size, seq_len, 1)
-        y_tn = self.out_tn(x_gru)  # (batch_size, seq_len, 1)
+        y_tn = self.out_tn(x_gru)  # (batch_size, seq_len, tsNumeVocabSize)
+        y_td = self.out_td(x_gru)  # (batch_size, seq_len, tsDenoVocabSize)
 
-        return y_td, y_tn
+        y_tn = y_tn.permute(0, 2, 1)  # (batch_size, tsNumeVocabSize, seq_len)
+        y_td = y_td.permute(0, 2, 1)  # (batch_size, tsDenoVocabSize, seq_len)
+
+        return y_tn, y_td
 

@@ -2,11 +2,15 @@ import warnings
 warnings.filterwarnings('ignore')
 import argparse
 import pytorch_lightning as pl
+pl.seed_everything(42)
 import os
 
 from data.data_module import Pm2sDataModule
 from modules.beat import BeatModule
 from modules.quantisation import QuantisationModule
+from modules.hand_part import HandPartModule
+from modules.key_signature import KeySignatureModule
+from modules.time_signature import TimeSignatureModule
 from configs import gpus
 
 
@@ -29,6 +33,14 @@ def train(args):
         model = BeatModule()
     elif args.feature == 'quantisation':
         model = QuantisationModule()
+    elif args.feature == 'hand_part':
+        model = HandPartModule()
+    elif args.feature == 'key_signature':
+        model = KeySignatureModule()
+    elif args.feature == 'time_signature':
+        model = TimeSignatureModule()
+    else:
+        raise ValueError('Invalid feature type.')
 
     # Logger
     logger = pl.loggers.MLFlowLogger(
