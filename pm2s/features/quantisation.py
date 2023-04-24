@@ -17,6 +17,7 @@ class RNNJointQuantisationProcessor(MIDIProcessor):
         if state_dict_path:
             self._model = RNNJointQuantisationModel()
             self._model.load_state_dict(torch.load(state_dict_path))
+            self._model.beat_model.load_state_dict(torch.load('_model_state_dicts/beat/RNNJointBeatModel.pth'))
             self._model.eval()
         else:
             self._model = RNNJointQuantisationModel()
