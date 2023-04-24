@@ -31,8 +31,9 @@ class RNNJointQuantisationModel(nn.Module):
             param.requires_grad = False
 
     def forward(self, x):
-        # x: (batch_size, seq_len, len(features)==4)
+        y_beat, y_downbeat, _ = self.beat_model(x)  # (batch_size, seq_len)
 
+        # x: (batch_size, seq_len, len(features)==4)
         x = encode_note_sequence(x)
         
         x_conv_onset = self.conv_onset(x)  # (batch_size, seq_len, hidden_size)
@@ -40,8 +41,7 @@ class RNNJointQuantisationModel(nn.Module):
 
         x_gru_value = self.gru_value(x_conv_value) # (batch_size, seq_len, hidden_size)
         y_value = self.out_value(x_gru_value) # (batch_size, seq_len, noteValueVocab)
-
-        y_beat, y_downbeat, _ = self.beat_model(x)  # (batch_size, seq_len)
+        
         x_concat_onset = torch.cat((x_conv_onset, y_beat.unsqueeze(2), y_value), dim=2) # (batch_size, seq_len, hidden_size + 1 + noteValueVocab)
         x_gru_onset = self.gru_onset(x_concat_onset) # (batch_size, seq_len, hidden_size)
         y_onset = self.out_onset(x_gru_onset) # (batch_size, seq_len, onsetVocab)
