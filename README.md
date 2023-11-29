@@ -17,6 +17,8 @@ Use the following code to download the pre-trained models:
 
 To use the pre-trained model for prediction, please follow the instructions in `demo.ipynb`. To train a model from scratch, please refer to the instructions in `dev/README.md`.
 
+Reference code (to be cleaned) to generate MIDI from the predicted features can be found at https://github.com/cheriell/MIDI-quantisation quantmidi/post_processing.py -> generate_MIDI_score().
+
 ## Cite
 
 > L. Liu, Q. Kong, V. Morfi and E. Benetos, "Performance MIDI-to-Score Conversion by Neural Beat Tracking" in Proceedings of the 23rd International Society for Music Information Retrieval Conference, Bengaluru, India, Dec 2022.
