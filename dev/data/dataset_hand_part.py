@@ -2,6 +2,7 @@ import numpy as np
 
 from configs import *
 from data.dataset_base import BaseDataset
+from data.data_augmentation import DataAugmentation
 from pm2s.constants import *
 
 
@@ -9,6 +10,9 @@ class HandPartDataset(BaseDataset):
 
     def __init__(self, workspace, split):
         super().__init__(workspace, split, from_asap=False)
+        
+        # Initialise data augmentation
+        self.dataaug = DataAugmentation(feature='hand_part')
 
     def __getitem__(self, idx):
 

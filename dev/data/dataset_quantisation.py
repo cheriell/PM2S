@@ -2,6 +2,7 @@ import torch
 import numpy as np
 
 from data.dataset_base import BaseDataset
+from data.data_augmentation import DataAugmentation
 from pm2s.constants import *
 from configs import *
 
@@ -9,6 +10,9 @@ class QuantisationDataset(BaseDataset):
 
     def __init__(self, workspace, split):
         super().__init__(workspace, split, from_asap=False)
+        
+        # Initialise data augmentation
+        self.dataaug = DataAugmentation(feature='quantisation')
 
     def __getitem__(self, idx):
 

@@ -8,7 +8,6 @@ import pickle
 from pathlib import Path
 
 from configs import *
-from data.data_augmentation import DataAugmentation
 from pm2s.constants import *
 
 class BaseDataset(torch.utils.data.Dataset):
@@ -35,9 +34,6 @@ class BaseDataset(torch.utils.data.Dataset):
         for i, row in self.metadata.iterrows():
             self.piece2row[row['piece_id']].append(i)
         self.pieces = list(self.piece2row.keys())
-
-        # Initialise data augmentation
-        self.dataaug = DataAugmentation()
 
     def __len__(self):
         if self.split == 'train' or self.split == 'all':

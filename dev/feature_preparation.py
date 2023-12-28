@@ -20,10 +20,12 @@ from data.data_utils import *
 
 class FeaturePreparation():
 
-    def __init__(self, dataset_folder, feature_folder, workers):
-        self.dataset_folder = dataset_folder
-        self.feature_folder = feature_folder
-        self.workers = workers
+    def __init__(self, args):
+        self.dataset_folder = args.dataset_folder
+        self.feature_folder = args.feature_folder
+        self.workers = args.workers
+        self.transcribed = args.transcribed
+        self.transcribed_midi_path = args.transcribed_midi_path
 
         # dataset folders
         [self.ASAP, self.A_MAPS, self.CPM, self.ACPAS] = self.dataset_folder
@@ -38,9 +40,9 @@ class FeaturePreparation():
         ACPAS_metadata_S = pd.read_csv(str(Path(self.ACPAS, 'metadata_S.csv')))
         ACPAS_metadata_R = pd.read_csv(str(Path(self.ACPAS, 'metadata_R.csv')))
         ACPAS_metadata = pd.concat([
-            ACPAS_metadata_R[ACPAS_metadata_R['source'] == 'MAPS'], 
+            ACPAS_metadata_R, 
             ACPAS_metadata_S
-        ], ignore_index=True)
+        ], ignore_index=True).reset_index(drop=True)
 
         # ============ create metadata ============
         print('INFO: Creating metadata')
@@ -79,12 +81,18 @@ class FeaturePreparation():
                     split = 'train'
                 else:
                     split = 'valid'
+
             # midi_perfm
-            if str(row['performance_MIDI_external']) == 'nan':
-                midi_perfm = '--'
-                print('WARNING: Performance {} has no MIDI file'.format(row['performance_id']))
+            if not self.transcribed:
+                if str(row['performance_MIDI_external']) == 'nan':
+                    midi_perfm = '--'
+                    print('WARNING: Performance {} has no MIDI file'.format(row['performance_id']))
+                else:
+                    midi_perfm = format_path(row['performance_MIDI_external'])
             else:
-                midi_perfm = format_path(row['performance_MIDI_external'])
+                # Using transcribed MIDI files instead of original MIDI files
+                midi_perfm = os.path.join(self.transcribed_midi_path, row['folder'], row['performance_audio'].replace('.wav', '.mid'))
+
             # annot_file
             if row['source'] == 'ASAP':
                 if str(row['performance_annotation_external']) == 'nan':
@@ -93,7 +101,10 @@ class FeaturePreparation():
                 else:
                     annot_file = format_path(row['performance_annotation_external'])
             else:
-                annot_file = '--'
+                # annot_file = '--'
+                # Using transcribed MIDI files instead of original MIDI files
+                annot_file = format_path(row['performance_MIDI_external'])
+
             # feature_file
             feature_file = Path(self.feature_folder, '{}.pkl'.format(performance_id))
 
@@ -116,7 +127,7 @@ class FeaturePreparation():
 
     def load_metadata(self):
         print('INFO: Loading metadata...')
-        self.metadata = pd.read_csv(str(Path(self.feature_folder, 'metadata.csv')))
+        self.metadata = pd.read_csv('metadata/metadata.csv')
 
     def print_statistics(self):
         print('INFO: Printing dataset statistics')
@@ -226,15 +237,25 @@ class FeaturePreparation():
         def prepare_one_feature(row):
             print('INFO: Preparing feature {}'.format(row['performance_id']))
 
+            # check if the feature file exists
+            if Path(row['feature_file']).exists():
+                return
+
             if row['source'] == 'ASAP':
                 # get note sequence
                 note_sequence = get_note_sequence_from_midi(row['midi_perfm'])
                 # get annotations dict (beats, downbeats, key signatures, time signatures)
                 annotations = get_annotations_from_annot_file(row['annot_file'])
             else:
+                # Can be discarded.
                 # get note sequence and annotations dict
-                # (beats, downbeats, key signatures, time signatures, musical onset times, note value in beats, hand parts)
-                note_sequence, annotations = get_note_sequence_and_annotations_from_midi(row['midi_perfm'])
+                # # (beats, downbeats, key signatures, time signatures, musical onset times, note value in beats, hand parts)
+                # note_sequence, annotations = get_note_sequence_and_annotations_from_midi(row['midi_perfm'])
+
+                # Get note sequence from transcribed MIDIs
+                note_sequence = get_note_sequence_from_midi(row['midi_perfm'])
+                # get annotations from ground truth MIDIs
+                _, annotations = get_note_sequence_and_annotations_from_midi(row['annot_file'])
             
             pickle.dump((note_sequence, annotations), open(row['feature_file'], 'wb'))
 
@@ -259,6 +280,8 @@ if __name__ == '__main__':
     parser.add_argument('--feature_folder', type=str, help='Path to the feature folder')
     parser.add_argument('--workers', type=int, help='Number of workers for parallel processing, 0 for not using \
                         multiprocessing, minus for using default number of workers', default=mp.cpu_count())
+    parser.add_argument('--transcribed', type=bool, default=False, help='Use transcribed MIDI files instead of original')
+    parser.add_argument('--transcribed_midi_path', type=str, help='Path to the transcribed MIDI files')
     args = parser.parse_args()
 
     # ========= input check =========
@@ -280,8 +303,10 @@ if __name__ == '__main__':
         pass
 
     # ========= feature preparation =========
-    featprep = FeaturePreparation(args.dataset_folder, args.feature_folder, args.workers)
+    featprep = FeaturePreparation(args)
 
     featprep.prepare_metadata()
     featprep.print_statistics()
+
+    featprep.load_metadata()
     featprep.prepare_features()

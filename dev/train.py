@@ -22,6 +22,9 @@ torch.autograd.set_detect_anomaly(True)
 ## END DEBUGGING BLOCK
 ## -------------------------
 
+# Set cuda visable devices
+os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
+
 
 
 def train(args):

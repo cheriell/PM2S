@@ -10,15 +10,9 @@ max_bpm = 240
 ticks_per_beat = 240
 
 # =========== time signature definitions ===========
-tsDenominators = [0, 2, 4, 8]  # 0 for others
-tsDeno2Index = {0: 0, 2: 1, 4: 2, 8: 3}
-tsIndex2Deno = {0: 0, 1: 2, 2: 4, 3: 8}
-tsDenoVocabSize = len(tsDenominators)
-
-tsNumerators = [0, 2, 3, 4, 6]  # 0 for others
-tsNume2Index = {0: 0, 2: 1, 3: 2, 4: 3, 6: 4}
-tsIndex2Nume = {0: 0, 1: 2, 2: 3, 3: 4, 4: 6}
-tsNumeVocabSize = len(tsNumerators)
+# Update Dec 2023: change to use binary classifications for time signature prediction
+# 0: 4-based time signature (such as 4/4, 2/4), 1: 3-based time signature (such as 3/4, 6/8)
+# we can then infer the numerator and denominator from the beats and downbeats predictions.
 
 # =========== key signature definitions ==========
 # key in sharps in mido
