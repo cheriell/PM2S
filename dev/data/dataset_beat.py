@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-from configs import *
+from configs import training_configs
 from data.dataset_base import BaseDataset
 from data.data_augmentation import DataAugmentation
 from pm2s.constants import *
@@ -10,7 +10,7 @@ from pm2s.constants import *
 class BeatDataset(BaseDataset):
 
     def __init__(self, workspace, split):
-        super().__init__(workspace, split)
+        super().__init__(workspace, split, feature='beat')
         
         # Initialise data augmentation
         self.dataaug = DataAugmentation(feature='beat')
@@ -60,6 +60,7 @@ class BeatDataset(BaseDataset):
         
         # pad if length is shorter than max_length
         length = len(note_sequence)
+        max_length = training_configs['beat']['max_length']
         if len(note_sequence) < max_length:
             note_sequence = np.concatenate([note_sequence, np.zeros((max_length - len(note_sequence), 4))])
             beat_probs = np.concatenate([beat_probs, np.zeros(max_length - len(beat_probs))])

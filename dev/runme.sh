@@ -31,20 +31,21 @@ transcribed_midi_path="/import/c4dm-05/ll307/repositories/pipeline-A2S/transcrib
 # Model training
 # ========================================================
 # feature can be 'beat', 'quantisation', 'time_signature', 'key_signature', 'hand_part'
-python3 train.py \
-    --workspace $WORKSPACE \
-    --ASAP $ASAP \
-    --A_MAPS $A_MAPS \
-    --CPM $CPM \
+# python3 train.py \
+#     --workspace $WORKSPACE \
+#     --ASAP $ASAP \
+#     --A_MAPS $A_MAPS \
+#     --CPM $CPM \
+#     --feature 'time_signature' \
+#     --full_train
+
+
+# ========================================================
+# Save model state dict
+# ========================================================
+# Change the model_checkpoint_path to your own trained model checkpoint path, this will save the model to the default path (replacing the pre-trained model state dict)
+python3 save_model.py \
+    --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-timesigcorrection/mlruns/1/7e3324f3fa4b466aac078fedab72e467/checkpoints/epoch=32-val_loss=0.58-val_f1=0.27.ckpt \
     --feature 'time_signature' \
-    --full_train
-
-
-# # ========================================================
-# # Save model state dict
-# # ========================================================
-# # Change the model_checkpoint_path to your own trained model checkpoint path, this will save the model to the default path (replacing the pre-trained model state dict)
-# python3 save_model.py \
-#     --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-draft/mlruns/5/9cd46d4570eb45ca8e72052b479e7ac4/checkpoints/epoch=57-val_loss=0.23-val_f1=0.86.ckpt \
-#     --feature 'key_signature' \
-#     # --beat_model_checkpoint ../_model_state_dicts/beat/RNNJointBeatModel_fullTrain.pth
+    --save_to_path nohup.out.timesig_model.pth
+    # --beat_model_checkpoint ../_model_state_dicts/beat/RNNJointBeatModel_fullTrain.pth

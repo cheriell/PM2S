@@ -1,6 +1,6 @@
 import numpy as np
 
-from configs import *
+from configs import training_configs
 from data.dataset_base import BaseDataset
 from data.data_augmentation import DataAugmentation
 from pm2s.constants import *
@@ -9,7 +9,7 @@ from pm2s.constants import *
 class KeySignatureDataset(BaseDataset):
 
     def __init__(self, workspace, split):
-        super().__init__(workspace, split)
+        super().__init__(workspace, split, feature='key_signature')
         
         # Initialise data augmentation
         self.dataaug = DataAugmentation(feature='key_signature')
@@ -33,6 +33,7 @@ class KeySignatureDataset(BaseDataset):
 
         # padding
         length = len(note_sequence)
+        max_length = training_configs['key_signature']['max_length']
         if length < max_length:
             note_sequence = np.concatenate([note_sequence, np.zeros((max_length - length, 4))])
             key_numbers = np.concatenate([key_numbers, np.zeros(max_length - length)])

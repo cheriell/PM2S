@@ -4,12 +4,12 @@ import numpy as np
 from data.dataset_base import BaseDataset
 from data.data_augmentation import DataAugmentation
 from pm2s.constants import *
-from configs import *
+from configs import training_configs
 
 class QuantisationDataset(BaseDataset):
 
     def __init__(self, workspace, split):
-        super().__init__(workspace, split, from_asap=False)
+        super().__init__(workspace, split, from_asap=False, feature='quantisation')
         
         # Initialise data augmentation
         self.dataaug = DataAugmentation(feature='quantisation')
@@ -30,6 +30,7 @@ class QuantisationDataset(BaseDataset):
 
         # padding
         length = len(note_sequence)
+        max_length = training_configs['quantisation']['max_length']
         if length < max_length:
             note_sequence = np.concatenate([note_sequence, np.zeros((max_length - length, 4))])
             onsets = np.concatenate([onsets, np.zeros(max_length - length)])

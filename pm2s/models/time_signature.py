@@ -7,7 +7,7 @@ from pm2s.models.beat import RNNJointBeatModel
 # from pm2s.constants import tsNumeVocabSize, tsDenoVocabSize, timeSigVocabSize
 
 
-class RNNTimeSignatureModel(nn.Module):
+class CNNTimeSignatureModel(nn.Module):
 
     def __init__(self, hidden_size=256):
         super().__init__()

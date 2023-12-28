@@ -1,17 +1,17 @@
 import pytorch_lightning as pl
 import os, sys
 sys.path.insert(0, os.path.join(sys.path[0], '..'))
+import torch
 import torch.nn.functional as F
-import torch.nn as nn
 
-from pm2s.models.time_signature import RNNTimeSignatureModel
-from modules.utils import *
+from pm2s.models.time_signature import CNNTimeSignatureModel
+from modules.utils import configure_optimizers, configure_callbacks, f_measure_framewise
 
 class TimeSignatureModule(pl.LightningModule):
 
     def __init__(self):
         super().__init__()
-        self.model = RNNTimeSignatureModel()
+        self.model = CNNTimeSignatureModel()
 
     def forward(self, x):
         return self.model(x)
@@ -101,6 +101,10 @@ class TimeSignatureModule(pl.LightningModule):
             # get sample from batch
             y_ts_hat_i = torch.round(y_ts_hat[i, :length[i]])
             y_ts_i = y_ts[i, :length[i]]
+            if i == 0:
+                print(y_ts_hat_i)
+                print(y_ts_i)
+                print()
 
             # filter out ignored indexes (the same as padding)
             # No need to filter out ignored indexes for binary classification
