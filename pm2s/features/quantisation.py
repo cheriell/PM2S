@@ -5,12 +5,13 @@ from pm2s.features._processor import MIDIProcessor
 from pm2s.models.quantisation import RNNJointQuantisationModel
 from pm2s.io.midi_read import read_note_sequence
 from pm2s.features.beat import RNNJointBeatProcessor
-from pm2s.constants import N_per_beat, tolerance
+from pm2s.constants import N_per_beat, tolerance, model_state_dict_paths
 
 
 class RNNJointQuantisationProcessor(MIDIProcessor):
 
-    def __init__(self, model_state_dict_path='_model_state_dicts/quantisation/RNNJointQuantisationModel.pth', **kwargs):
+    def __init__(self, **kwargs):
+        model_state_dict_path = model_state_dict_paths['quantisation']['state_dict_path']
         super().__init__(model_state_dict_path, **kwargs)
 
     def load(self, state_dict_path):

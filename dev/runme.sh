@@ -4,7 +4,7 @@
 # Workspace, dataset, and evaluation tools
 # ========================================================
 # Modify the following paths to your own workspace
-WORKSPACE="/import/c4dm-05/ll307/workspace/PM2S-timesigcorrection"
+WORKSPACE="/import/c4dm-05/ll307/workspace/PM2S-transcribed"
 
 # Modify the following paths to your own dataset directory
 ASAP="/import/c4dm-05/ll307/datasets/asap-dataset-note_alignments"
@@ -23,29 +23,54 @@ transcribed_midi_path="/import/c4dm-05/ll307/repositories/pipeline-A2S/transcrib
 #     --dataset_folder $ASAP $A_MAPS $CPM $ACPAS \
 #     --feature_folder $WORKSPACE/features \
 #     --workers 4 \
-#     --transcribed False \
-#     --transcribed_midi_path $transcribed_midi_path \
+#     --transcribed 0 \
+#     # --transcribed_midi_path $transcribed_midi_path \
 
 
 # ========================================================
-# Model training
+# Model training (features: 'beat' 'quantisation' 'time_signature' 'key_signature' 'hand_part')
 # ========================================================
-# feature can be 'beat', 'quantisation', 'time_signature', 'key_signature', 'hand_part'
-# python3 train.py \
-#     --workspace $WORKSPACE \
-#     --ASAP $ASAP \
-#     --A_MAPS $A_MAPS \
-#     --CPM $CPM \
+# for feature in 'beat' 'quantisation' 'time_signature' 'key_signature' 'hand_part'
+# do
+# 	python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature $feature --full_train
+# done
+# python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature time_signature --full_train
+
+# ========================================================
+# Convert model checkpoint to model state dict
+# ========================================================
+# Change the model_checkpoint_path to your own trained model checkpoint path. If model_state_dict_path is not specified, this will save the model to the default path (_model_state_dict.pth)
+# python3 model_checkpoint_2_state_dict.py \
 #     --feature 'time_signature' \
-#     --full_train
+#     --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-transcribed/mlruns/1/8eb6656db9a94a1d998b1c61a72545f9/checkpoints/epoch=84-val_loss=0.5156-val_f1=0.2704.ckpt \
+#     --model_state_dict_path ../_model_state_dicts_transcribed/time_signature/CNNTimeSignatureModel_1.pth
 
 
 # ========================================================
-# Save model state dict
+# Evaluation
 # ========================================================
-# Change the model_checkpoint_path to your own trained model checkpoint path, this will save the model to the default path (replacing the pre-trained model state dict)
-python3 save_model.py \
-    --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-timesigcorrection/mlruns/1/7e3324f3fa4b466aac078fedab72e467/checkpoints/epoch=32-val_loss=0.58-val_f1=0.27.ckpt \
-    --feature 'time_signature' \
-    --save_to_path nohup.out.timesig_model.pth
-    # --beat_model_checkpoint ../_model_state_dicts/beat/RNNJointBeatModel_fullTrain.pth
+# This will evaluate on both clean performance MIDI and transcribed MIDI (from audio recordings) together.
+python3 evaluate.py \
+    --feature beat \
+    --workspace $WORKSPACE \
+    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/beat/RNNJointBeatModel.pth \
+    --device cuda:0 \
+
+python3 evaluate.py \
+    --feature time_signature \
+    --workspace $WORKSPACE \
+    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/time_signature/CNNTimeSignatureModel.pth \
+    --device cuda:0 \
+
+python3 evaluate.py \
+    --feature key_signature \
+    --workspace $WORKSPACE \
+    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/key_signature/RNNKeySignatureModel.pth \
+    --device cuda:0 \
+
+python3 evaluate.py \
+    --feature hand_part \
+    --workspace $WORKSPACE \
+    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/hand_part/RNNHandPartModel.pth \
+    --device cuda:0 \
+

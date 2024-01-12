@@ -101,10 +101,6 @@ class TimeSignatureModule(pl.LightningModule):
             # get sample from batch
             y_ts_hat_i = torch.round(y_ts_hat[i, :length[i]])
             y_ts_i = y_ts[i, :length[i]]
-            if i == 0:
-                print(y_ts_hat_i)
-                print(y_ts_i)
-                print()
 
             # filter out ignored indexes (the same as padding)
             # No need to filter out ignored indexes for binary classification

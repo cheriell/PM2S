@@ -82,42 +82,55 @@ class FeaturePreparation():
                 else:
                     split = 'valid'
 
-            # midi_perfm
-            if not self.transcribed:
+            if split != '--':
+                # midi_perfm
                 if str(row['performance_MIDI_external']) == 'nan':
                     midi_perfm = '--'
                     print('WARNING: Performance {} has no MIDI file'.format(row['performance_id']))
                 else:
                     midi_perfm = format_path(row['performance_MIDI_external'])
-            else:
-                # Using transcribed MIDI files instead of original MIDI files
-                midi_perfm = os.path.join(self.transcribed_midi_path, row['folder'], row['performance_audio'].replace('.wav', '.mid'))
+                if self.transcribed:
+                    # Using transcribed MIDI files instead of original MIDI files
+                    midi_perfm_transcribed = os.path.join(self.transcribed_midi_path, row['folder'], row['performance_audio'].replace('.wav', '.mid'))
 
-            # annot_file
-            if row['source'] == 'ASAP':
-                if str(row['performance_annotation_external']) == 'nan':
-                    annot_file = '--'
-                    print('WARNING: Performance {} has no annotation file'.format(row['performance_id']))
+                # annot_file
+                if row['source'] == 'ASAP':
+                    if str(row['performance_annotation_external']) == 'nan':
+                        annot_file = '--'
+                        print('WARNING: Performance {} has no annotation file'.format(row['performance_id']))
+                    else:
+                        annot_file = format_path(row['performance_annotation_external'])
                 else:
-                    annot_file = format_path(row['performance_annotation_external'])
-            else:
-                # annot_file = '--'
-                # Using transcribed MIDI files instead of original MIDI files
-                annot_file = format_path(row['performance_MIDI_external'])
+                    # annot_file = '--'
+                    # Using transcribed MIDI files instead of original MIDI files
+                    annot_file = format_path(row['performance_MIDI_external'])
 
-            # feature_file
-            feature_file = Path(self.feature_folder, '{}.pkl'.format(performance_id))
+                # feature_file
+                feature_file = Path(self.feature_folder, '{}.pkl'.format(performance_id))
 
-            metadata = metadata.append({
-                'performance_id': performance_id,
-                'piece_id': piece_id,
-                'source': source,
-                'split': split,
-                'midi_perfm': midi_perfm,
-                'annot_file': annot_file,
-                'feature_file': str(feature_file),
-                'performance_MIDI_external': row['performance_MIDI_external'],
-            }, ignore_index=True)
+                metadata = metadata.append({
+                    'performance_id': performance_id,
+                    'piece_id': piece_id,
+                    'source': source,
+                    'split': split,
+                    'midi_perfm': midi_perfm,
+                    'annot_file': annot_file,
+                    'feature_file': str(feature_file),
+                    'performance_MIDI_external': row['performance_MIDI_external'],
+                    'transcribed': False,
+                }, ignore_index=True)
+                if self.transcribed:
+                    metadata = metadata.append({
+                        'performance_id': performance_id,
+                        'piece_id': piece_id,
+                        'source': source,
+                        'split': split,
+                        'midi_perfm': midi_perfm_transcribed,
+                        'annot_file': annot_file,
+                        'feature_file': str(feature_file)+'_transcribed.pkl',
+                        'performance_MIDI_external': row['performance_MIDI_external'],
+                        'transcribed': True,
+                    }, ignore_index=True)
 
         # ======== save metadata ==========
         metadata.to_csv('metadata/metadata.csv', index=False)
@@ -247,12 +260,7 @@ class FeaturePreparation():
                 # get annotations dict (beats, downbeats, key signatures, time signatures)
                 annotations = get_annotations_from_annot_file(row['annot_file'])
             else:
-                # Can be discarded.
-                # get note sequence and annotations dict
-                # # (beats, downbeats, key signatures, time signatures, musical onset times, note value in beats, hand parts)
-                # note_sequence, annotations = get_note_sequence_and_annotations_from_midi(row['midi_perfm'])
-
-                # Get note sequence from transcribed MIDIs
+                # Get note sequence from performance MIDIs
                 note_sequence = get_note_sequence_from_midi(row['midi_perfm'])
                 # get annotations from ground truth MIDIs
                 _, annotations = get_note_sequence_and_annotations_from_midi(row['annot_file'])
@@ -280,7 +288,7 @@ if __name__ == '__main__':
     parser.add_argument('--feature_folder', type=str, help='Path to the feature folder')
     parser.add_argument('--workers', type=int, help='Number of workers for parallel processing, 0 for not using \
                         multiprocessing, minus for using default number of workers', default=mp.cpu_count())
-    parser.add_argument('--transcribed', type=bool, default=False, help='Use transcribed MIDI files instead of original')
+    parser.add_argument('--transcribed', type=int, default=0, help='Use transcribed MIDI files together with original')
     parser.add_argument('--transcribed_midi_path', type=str, help='Path to the transcribed MIDI files')
     args = parser.parse_args()
 

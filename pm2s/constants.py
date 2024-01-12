@@ -37,3 +37,27 @@ N_per_beat = 24  # 24 resolution per beat
 max_note_value = 4 * N_per_beat  # 4 beats
 omVocab = N_per_beat  # onset musical vocabulary size
 nvVocab = max_note_value + 1  # note value vocabulary size, 0 is ignored during training
+
+# =========== model state dicts ===========
+model_state_dict_paths = {
+    'beat': {
+        'state_dict_path': '_model_state_dicts_transcribed/beat/RNNJointBeatModel.pth',
+        'zenodo_path': '',
+    },
+    'quantisation': {
+        'state_dict_path': '_model_state_dicts_transcribed/quantisation/RNNJointQuantisationModel.pth',
+        'zenodo_path': '',
+    },
+    'hand_part': {
+        'state_dict_path': '_model_state_dicts_transcribed/hand_part/RNNHandPartModel.pth',
+        'zenodo_path': '',
+    },
+    'key_signature': {
+        'state_dict_path': '_model_state_dicts_transcribed/key_signature/RNNKeySignatureModel.pth',
+        'zenodo_path': '',
+    },
+    'time_signature': {
+        'state_dict_path': '_model_state_dicts_transcribed/time_signature/CNNTimeSignatureModel.pth',
+        'zenodo_path': '',
+    },
+}

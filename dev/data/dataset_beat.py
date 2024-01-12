@@ -58,14 +58,15 @@ class BeatDataset(BaseDataset):
             downbeat_probs[i] = time2downbeat[np.round(onset / resolution).astype(int)]
             ibis[i] = time2ibi[np.round(onset / resolution).astype(int)]
         
-        # pad if length is shorter than max_length
         length = len(note_sequence)
-        max_length = training_configs['beat']['max_length']
-        if len(note_sequence) < max_length:
-            note_sequence = np.concatenate([note_sequence, np.zeros((max_length - len(note_sequence), 4))])
-            beat_probs = np.concatenate([beat_probs, np.zeros(max_length - len(beat_probs))])
-            downbeat_probs = np.concatenate([downbeat_probs, np.zeros(max_length - len(downbeat_probs))])
-            ibis = np.concatenate([ibis, np.zeros(max_length - len(ibis))])
+        # pad if length is shorter than max_length
+        if self.split != 'test':
+            max_length = training_configs['beat']['max_length']
+            if len(note_sequence) < max_length:
+                note_sequence = np.concatenate([note_sequence, np.zeros((max_length - len(note_sequence), 4))])
+                beat_probs = np.concatenate([beat_probs, np.zeros(max_length - len(beat_probs))])
+                downbeat_probs = np.concatenate([downbeat_probs, np.zeros(max_length - len(downbeat_probs))])
+                ibis = np.concatenate([ibis, np.zeros(max_length - len(ibis))])
             
         return (
             note_sequence, 

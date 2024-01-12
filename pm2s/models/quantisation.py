@@ -1,14 +1,14 @@
 import torch.nn as nn
 import torch
 
-from pm2s.constants import omVocab, nvVocab
+from pm2s.constants import omVocab, nvVocab, model_state_dict_paths
 from pm2s.models.utils import get_in_features, encode_note_sequence
 from pm2s.models.blocks import ConvBlock, GRUBlock, LinearOutput
 from pm2s.models.beat import RNNJointBeatModel
 
 class RNNJointQuantisationModel(nn.Module):
 
-    def __init__(self, beat_model_checkpoint="_model_state_dicts/beat/RNNJointBeatModel.pth", hidden_size=512):
+    def __init__(self, beat_model_state_dict=model_state_dict_paths['beat']['state_dict_path'], hidden_size=512):
 
         super().__init__()
 
@@ -23,10 +23,9 @@ class RNNJointQuantisationModel(nn.Module):
         self.out_onset = LinearOutput(in_features=hidden_size, out_features=omVocab, activation_type='softmax')
         self.out_value = LinearOutput(in_features=hidden_size, out_features=nvVocab, activation_type='softmax')
 
-        # load beat model and freeze
-        # debugging
+        # load beat model and freeze its parameters
         self.beat_model = RNNJointBeatModel()
-        self.beat_model.load_state_dict(torch.load(beat_model_checkpoint))
+        self.beat_model.load_state_dict(torch.load(beat_model_state_dict))
         for param in self.beat_model.parameters():
             param.requires_grad = False
 

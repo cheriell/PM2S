@@ -5,12 +5,13 @@ import numpy as np
 from pm2s.features._processor import MIDIProcessor
 from pm2s.models.beat import RNNJointBeatModel
 from pm2s.io.midi_read import read_note_sequence
-from pm2s.constants import min_bpm, tolerance
+from pm2s.constants import min_bpm, tolerance, model_state_dict_paths
 
 
 class RNNJointBeatProcessor(MIDIProcessor):
 
-    def __init__(self, model_state_dict_path='_model_state_dicts/beat/RNNJointBeatModel.pth', **kwargs):
+    def __init__(self, **kwargs):
+        model_state_dict_path = model_state_dict_paths['beat']['state_dict_path']
         super().__init__(model_state_dict_path, **kwargs)
                          
     def load(self, state_dict_path):

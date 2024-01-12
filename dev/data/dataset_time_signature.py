@@ -37,10 +37,12 @@ class TimeSignatureDataset(BaseDataset):
 
         # padding
         length = len(note_sequence)
-        max_length = training_configs['time_signature']['max_length']
-        if length < max_length:
-            note_sequence = np.concatenate([note_sequence, np.zeros((max_length - length, 4))])
-            timeSigs = np.concatenate([timeSigs, np.zeros(max_length - length)])
+        if self.split != 'test':
+            # Padding for training and validation
+            max_length = training_configs['time_signature']['max_length']
+            if length < max_length:
+                note_sequence = np.concatenate([note_sequence, np.zeros((max_length - length, 4))])
+                timeSigs = np.concatenate([timeSigs, np.zeros(max_length - length)])
 
         return note_sequence, timeSigs, length
 

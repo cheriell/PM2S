@@ -12,7 +12,7 @@ from configs import training_configs
 
 class BaseDataset(torch.utils.data.Dataset):
 
-    def __init__(self, workspace, split, from_asap=True, feature=None):
+    def __init__(self, workspace, split, from_asap=True, feature=None, no_transcribed=False):
 
         # parameters
         self.workspace = workspace
@@ -26,6 +26,8 @@ class BaseDataset(torch.utils.data.Dataset):
 
         # Get metadata by split
         metadata = pd.read_csv('metadata/metadata.csv')
+        if no_transcribed:
+            metadata = metadata[metadata['transcribed'] == False]
         if split == 'all':
             self.metadata = metadata
         else:

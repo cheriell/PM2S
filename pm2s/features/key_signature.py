@@ -4,11 +4,12 @@ import numpy as np
 from pm2s.features._processor import MIDIProcessor
 from pm2s.models.key_signature import RNNKeySignatureModel
 from pm2s.io.midi_read import read_note_sequence
-from pm2s.constants import keyNumber2Name
+from pm2s.constants import keyNumber2Name, model_state_dict_paths
 
 class RNNKeySignatureProcessor(MIDIProcessor):
 
-    def __init__(self, model_state_dict_path='_model_state_dicts/key_signature/RNNKeySignatureModel.pth', **kwargs):
+    def __init__(self, **kwargs):
+        model_state_dict_path = model_state_dict_paths['key_signature']['state_dict_path']
         super().__init__(model_state_dict_path, **kwargs)
 
     def load(self, state_dict_path):

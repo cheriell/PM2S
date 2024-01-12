@@ -4,10 +4,12 @@ import numpy as np
 from pm2s.features._processor import MIDIProcessor
 from pm2s.models.time_signature import CNNTimeSignatureModel
 from pm2s.io.midi_read import read_note_sequence
+from pm2s.constants import model_state_dict_paths
 
 class CNNTimeSignatureProcessor(MIDIProcessor):
 
-    def __init__(self, model_state_dict_path='_model_state_dicts/time_signature/CNNTimeSignatureModel.pth', **kwargs):
+    def __init__(self, **kwargs):
+        model_state_dict_path = model_state_dict_paths['time_signature']['state_dict_path']
         super().__init__(model_state_dict_path, **kwargs)
 
     def load(self, state_dict_path):
@@ -35,7 +37,7 @@ class CNNTimeSignatureProcessor(MIDIProcessor):
     def pps(self, ts_probs, onsets):
         # ts_probs: (seq_len,)
         # onsets: (seq_len,)
-        ts = (ts_probs > 0.45).astype(int)
+        ts = (ts_probs > 0.5).astype(int)
         ts = np.bincount(ts).argmax()
         ts = '4/4' if ts == 0 else '3/4'
         return ts

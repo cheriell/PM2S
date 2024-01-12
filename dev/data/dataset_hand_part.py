@@ -9,7 +9,7 @@ from pm2s.constants import *
 class HandPartDataset(BaseDataset):
 
     def __init__(self, workspace, split):
-        super().__init__(workspace, split, from_asap=False, feature='hand_part')
+        super().__init__(workspace, split, from_asap=False, feature='hand_part', no_transcribed=True)
         
         # Initialise data augmentation
         self.dataaug = DataAugmentation(feature='hand_part')
@@ -29,10 +29,12 @@ class HandPartDataset(BaseDataset):
 
         # padding
         length = len(note_sequence)
-        max_length = training_configs['hand_part']['max_length']
-        if length < max_length:
-            note_sequence = np.concatenate([note_sequence, np.zeros((max_length - length, 4))])
-            hands = np.concatenate([hands, np.zeros(max_length - length)])
-            hands_mask = np.concatenate([hands_mask, np.zeros(max_length - length)])
+        if self.split != 'test':
+            # Padding for training and validation
+            max_length = training_configs['hand_part']['max_length']
+            if length < max_length:
+                note_sequence = np.concatenate([note_sequence, np.zeros((max_length - length, 4))])
+                hands = np.concatenate([hands, np.zeros(max_length - length)])
+                hands_mask = np.concatenate([hands_mask, np.zeros(max_length - length)])
 
         return note_sequence, hands, hands_mask, length
