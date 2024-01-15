@@ -79,3 +79,5 @@ python3 evaluate.py \
     --workspace $WORKSPACE \
     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/quantisation/RNNJointQuantisationModel.pth \
     --device cuda:0 \
+
+# For MV2H evaluation, we `evaluate_midi_mv2h.sh` to evaluate the performance of the generated score MIDI file, using the mv2h evaluation tool.

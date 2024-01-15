@@ -12,6 +12,7 @@ from pm2s.io.midi_write import write_midi_score
 
 def crnn_joint_pm2s(performance_midi_file, score_midi_file, start_time=0., end_time=30.):
     """Convert a performance MIDI file into a score MIDI file using CRNN-Joint model.
+    NOTE: We use the beat predictions to quantise the performance since it tends to be more accurate than the quantisation predictions.
     """
     #######################################################
     # Extract features
@@ -21,13 +22,11 @@ def crnn_joint_pm2s(performance_midi_file, score_midi_file, start_time=0., end_t
 
     # Get the features
     beat_processor = RNNJointBeatProcessor()
-    quantisation_processor = RNNJointQuantisationProcessor()
     hand_part_processor = RNNHandPartProcessor()
     key_signature_processor = RNNKeySignatureProcessor()
     time_signature_processor = CNNTimeSignatureProcessor()
 
     beats, downbeats = beat_processor.process_note_seq(note_seq)
-    musical_onsets, note_values = quantisation_processor.process_note_seq(note_seq)
     hand_parts = hand_part_processor.process_note_seq(note_seq)
     key_signature_changes = key_signature_processor.process_note_seq(note_seq)
     time_signature = time_signature_processor.process_note_seq(note_seq)
