@@ -19,9 +19,9 @@ class RNNHandPartProcessor(MIDIProcessor):
         else:
             self._model = RNNHandPartModel()
 
-    def process(self, midi_file, **kwargs):
-        # Read MIDI file into note sequence
-        note_seq = read_note_sequence(midi_file)
+    def process_note_seq(self, note_seq):
+        # Process note sequence
+
         x = torch.tensor(note_seq).unsqueeze(0)
 
         # Forward pass

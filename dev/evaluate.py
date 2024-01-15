@@ -14,6 +14,8 @@ if __name__ == '__main__':
     parser.add_argument('--device', type=str, required=True)
     args = parser.parse_args()
 
+    print('=' * 50)
+
     if args.feature == 'beat':
         print('Evaluating beat prediction ...')
         from evaluation.beat import evaluate_beat_prediction
@@ -41,3 +43,5 @@ if __name__ == '__main__':
 
     else:
         raise Exception('Incorrect argument!')
+
+    print('=' * 50)

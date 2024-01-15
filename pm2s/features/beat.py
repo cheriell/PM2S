@@ -18,13 +18,12 @@ class RNNJointBeatProcessor(MIDIProcessor):
         if state_dict_path:
             self._model = RNNJointBeatModel()
             self._model.load_state_dict(torch.load(state_dict_path))
-            self._model.eval()
         else:
             self._model = RNNJointBeatModel()
 
-    def process(self, midi_file, **kwargs):
-        # Read MIDI file into note sequence
-        note_seq = read_note_sequence(midi_file)
+    def process_note_seq(self, note_seq):
+        # Process note sequence
+
         x = torch.tensor(note_seq).unsqueeze(0)
 
         # Forward pass
@@ -107,7 +106,7 @@ class RNNJointBeatProcessor(MIDIProcessor):
 
         beats = RNNJointBeatProcessor.beat_complement_dp(beats, penalty)
 
-        return beats
+        return beats, downbeats
 
     @staticmethod
     def beat_complement_dp(beats, penalty=1.0):

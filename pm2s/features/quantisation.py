@@ -18,14 +18,13 @@ class RNNJointQuantisationProcessor(MIDIProcessor):
         if state_dict_path:
             self._model = RNNJointQuantisationModel()
             self._model.load_state_dict(torch.load(state_dict_path))
-            self._model.beat_model.load_state_dict(torch.load('_model_state_dicts/beat/RNNJointBeatModel.pth'))
-            self._model.eval()
+            self._model.beat_model.load_state_dict(torch.load(model_state_dict_paths['beat']['state_dict_path']))
         else:
             self._model = RNNJointQuantisationModel()
 
-    def process(self, midi_file, **kwargs):
-        # Read MIDI file into note sequence
-        note_seq = read_note_sequence(midi_file)
+    def process_note_seq(self, note_seq):
+        # Process note sequence
+
         x = torch.tensor(note_seq).unsqueeze(0)
 
         # Forward pass
@@ -42,9 +41,9 @@ class RNNJointQuantisationProcessor(MIDIProcessor):
         downbeat_probs = downbeat_probs.squeeze(0).detach().numpy()
         onsets = note_seq[:, 1]
 
-        beats, onset_positions, note_values = self.pps(onset_positions_idx, note_values_idx, beat_probs, downbeat_probs, onsets)
+        onset_positions, note_values = self.pps(onset_positions_idx, note_values_idx, beat_probs, downbeat_probs, onsets)
 
-        return beats, onset_positions, note_values
+        return onset_positions, note_values
 
     def pps(self, onset_positions_idx, note_values_idx, beat_probs, downbeat_probs, onsets):
         # post-processing
@@ -52,7 +51,7 @@ class RNNJointQuantisationProcessor(MIDIProcessor):
         # Use predicted beat as a reference
 
         # get beats prediction from beat_probs and downbeat_probs
-        beats = RNNJointBeatProcessor.pps(beat_probs, downbeat_probs, onsets)
+        beats, _ = RNNJointBeatProcessor.pps(beat_probs, downbeat_probs, onsets)
 
         # get predicted onset positions and note values in beats
         onset_positions_raw = onset_positions_idx / N_per_beat
@@ -73,4 +72,4 @@ class RNNJointQuantisationProcessor(MIDIProcessor):
             note_values[note_idx] = note_values_raw[note_idx]
             note_idx += 1
 
-        return beats, onset_positions, note_values
+        return onset_positions, note_values
