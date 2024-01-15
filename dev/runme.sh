@@ -50,27 +50,32 @@ transcribed_midi_path="/import/c4dm-05/ll307/repositories/pipeline-A2S/transcrib
 # Evaluation
 # ========================================================
 # This will evaluate on both clean performance MIDI and transcribed MIDI (from audio recordings) together.
-python3 evaluate.py \
-    --feature beat \
-    --workspace $WORKSPACE \
-    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/beat/RNNJointBeatModel.pth \
-    --device cuda:0 \
+# python3 evaluate.py \
+#     --feature beat \
+#     --workspace $WORKSPACE \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/beat/RNNJointBeatModel.pth \
+#     --device cuda:0 \
+
+# python3 evaluate.py \
+#     --feature time_signature \
+#     --workspace $WORKSPACE \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/time_signature/CNNTimeSignatureModel.pth \
+#     --device cuda:0 \
+
+# python3 evaluate.py \
+#     --feature key_signature \
+#     --workspace $WORKSPACE \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/key_signature/RNNKeySignatureModel.pth \
+#     --device cuda:0 \
+
+# python3 evaluate.py \
+#     --feature hand_part \
+#     --workspace $WORKSPACE \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/hand_part/RNNHandPartModel.pth \
+#     --device cuda:0 \
 
 python3 evaluate.py \
-    --feature time_signature \
+    --feature quantisation \
     --workspace $WORKSPACE \
-    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/time_signature/CNNTimeSignatureModel.pth \
+    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/quantisation/RNNJointQuantisationModel.pth \
     --device cuda:0 \
-
-python3 evaluate.py \
-    --feature key_signature \
-    --workspace $WORKSPACE \
-    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/key_signature/RNNKeySignatureModel.pth \
-    --device cuda:0 \
-
-python3 evaluate.py \
-    --feature hand_part \
-    --workspace $WORKSPACE \
-    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/hand_part/RNNHandPartModel.pth \
-    --device cuda:0 \
-

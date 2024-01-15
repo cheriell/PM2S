@@ -1,3 +1,5 @@
+import os
+
 # ========== data representation related constants ==========
 ## quantisation resolution
 resolution = 0.01  # quantization resolution: 0.01s = 10ms
@@ -41,23 +43,23 @@ nvVocab = max_note_value + 1  # note value vocabulary size, 0 is ignored during 
 # =========== model state dicts ===========
 model_state_dict_paths = {
     'beat': {
-        'state_dict_path': '_model_state_dicts_transcribed/beat/RNNJointBeatModel.pth',
+        'state_dict_path': os.path.join(os.path.dirname(__file__), '../_model_state_dicts/beat/RNNJointBeatModel.pth'),
         'zenodo_path': '',
     },
     'quantisation': {
-        'state_dict_path': '_model_state_dicts_transcribed/quantisation/RNNJointQuantisationModel.pth',
+        'state_dict_path': '_model_state_dicts/quantisation/RNNJointQuantisationModel.pth',
         'zenodo_path': '',
     },
     'hand_part': {
-        'state_dict_path': '_model_state_dicts_transcribed/hand_part/RNNHandPartModel.pth',
+        'state_dict_path': '_model_state_dicts/hand_part/RNNHandPartModel.pth',
         'zenodo_path': '',
     },
     'key_signature': {
-        'state_dict_path': '_model_state_dicts_transcribed/key_signature/RNNKeySignatureModel.pth',
+        'state_dict_path': '_model_state_dicts/key_signature/RNNKeySignatureModel.pth',
         'zenodo_path': '',
     },
     'time_signature': {
-        'state_dict_path': '_model_state_dicts_transcribed/time_signature/CNNTimeSignatureModel.pth',
+        'state_dict_path': '_model_state_dicts/time_signature/CNNTimeSignatureModel.pth',
         'zenodo_path': '',
     },
 }
