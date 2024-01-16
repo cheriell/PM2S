@@ -3,23 +3,22 @@ import torch
 from pm2s.features._processor import MIDIProcessor
 from pm2s.models.hand_part import RNNHandPartModel
 from pm2s.io.midi_read import read_note_sequence
+from pm2s.constants import model_state_dict_paths
 
 
 class RNNHandPartProcessor(MIDIProcessor):
 
-    def __init__(self, model_state_dict_path='_model_state_dicts/hand_part/RNNHandPartModel.pth', **kwargs):
-        super().__init__(model_state_dict_path, **kwargs)
+    def __init__(self, state_dict_path=None):
+        if state_dict_path is None:
+            state_dict_path = model_state_dict_paths['hand_part']['state_dict_path']
+        zenodo_path = model_state_dict_paths['hand_part']['zenodo_path']
 
-    def load(self, state_dict_path):
-        if state_dict_path:
-            self._model = RNNHandPartModel()
-            self._model.load_state_dict(torch.load(state_dict_path))
-        else:
-            self._model = RNNHandPartModel()
+        self._model = RNNHandPartModel()
+        self.load(state_dict_path=state_dict_path, zenodo_path=zenodo_path)
 
-    def process(self, midi_file, **kwargs):
-        # Read MIDI file into note sequence
-        note_seq = read_note_sequence(midi_file)
+    def process_note_seq(self, note_seq):
+        # Process note sequence
+
         x = torch.tensor(note_seq).unsqueeze(0)
 
         # Forward pass

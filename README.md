@@ -10,12 +10,9 @@ The implementation is based on Python 3.8 and PyTorch 1.12.0. Other versions can
 
 ## Running instructions
 
-Use the following code to download the pre-trained models:
+To use the pre-trained model for prediction, please follow the instructions in `demo.ipynb`. 
 
-    wget https://zenodo.org/record/7429669/files/_model_state_dicts.zip
-    unzip _model_state_dicts.zip
-
-To use the pre-trained model for prediction, please follow the instructions in `demo.ipynb`. To train a model from scratch, please refer to the instructions in `dev/README.md`.
+To train a model from scratch, please refer to the instructions in `dev/README.md`.
 
 Reference code (to be cleaned) to generate MIDI from the predicted features can be found at https://github.com/cheriell/MIDI-quantisation quantmidi/post_processing.py -> generate_MIDI_score().
 

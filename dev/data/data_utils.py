@@ -13,8 +13,6 @@ from pm2s.constants import (
     tolerance, 
     keySharps2Number, 
     keyVocabSize,
-    tsDeno2Index, 
-    # max_length_pr
 )
     
 def get_note_sequence_from_midi(midi_file):

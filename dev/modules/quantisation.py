@@ -9,9 +9,9 @@ from modules.utils import *
 
 class QuantisationModule(pl.LightningModule):
 
-    def __init__(self, beat_model_checkpoint="../_model_state_dicts/beat/RNNJointBeatModel.pth"):
+    def __init__(self, beat_model_state_dict="../_model_state_dicts/beat/RNNJointBeatModel.pth"):
         super().__init__()
-        self.model = RNNJointQuantisationModel(beat_model_checkpoint=beat_model_checkpoint)
+        self.model = RNNJointQuantisationModel(beat_model_state_dict=beat_model_state_dict)
 
     def forward(self, x):
         return self.model(x)

@@ -1,7 +1,7 @@
 import pytorch_lightning as pl
 import torch
 
-from configs import *
+from configs import training_configs
 from data.dataset_beat import BeatDataset
 from data.dataset_quantisation import QuantisationDataset
 from data.dataset_hand_part import HandPartDataset
@@ -44,9 +44,9 @@ class Pm2sDataModule(pl.LightningDataModule):
         sampler = torch.utils.data.sampler.RandomSampler(dataset)
         dataloader = torch.utils.data.dataloader.DataLoader(
             dataset,
-            batch_size=batch_size,
+            batch_size=training_configs[self.feature]['batch_size'],
             sampler=sampler,
-            num_workers=num_workers,
+            num_workers=training_configs[self.feature]['num_workers'],
             drop_last=True
         )
         return dataloader
@@ -56,9 +56,9 @@ class Pm2sDataModule(pl.LightningDataModule):
         sampler = torch.utils.data.sampler.SequentialSampler(dataset)
         dataloader = torch.utils.data.dataloader.DataLoader(
             dataset,
-            batch_size=batch_size,
+            batch_size=training_configs[self.feature]['batch_size'],
             sampler=sampler,
-            num_workers=num_workers,
+            num_workers=training_configs[self.feature]['num_workers'],
             drop_last=True
         )
         return dataloader

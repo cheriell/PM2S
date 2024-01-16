@@ -1,7 +1,9 @@
+import os
+
 # ========== data representation related constants ==========
 ## quantisation resolution
 resolution = 0.01  # quantization resolution: 0.01s = 10ms
-tolerance = 0.05  # tolerance for beat alignment: 0.05s = 50ms
+tolerance = 0.07  # tolerance for beat alignment: 0.05s = 50ms
 ibiVocab = int(4 / resolution) + 1  # vocabulary size for inter-beat-interval: 4s = 4/0.01s + 1, index 0 is ignored during training
 
 # ========== post-processing constants ==========
@@ -10,15 +12,9 @@ max_bpm = 240
 ticks_per_beat = 240
 
 # =========== time signature definitions ===========
-tsDenominators = [0, 2, 4, 8]  # 0 for others
-tsDeno2Index = {0: 0, 2: 1, 4: 2, 8: 3}
-tsIndex2Deno = {0: 0, 1: 2, 2: 4, 3: 8}
-tsDenoVocabSize = len(tsDenominators)
-
-tsNumerators = [0, 2, 3, 4, 6]  # 0 for others
-tsNume2Index = {0: 0, 2: 1, 3: 2, 4: 3, 6: 4}
-tsIndex2Nume = {0: 0, 1: 2, 2: 3, 3: 4, 4: 6}
-tsNumeVocabSize = len(tsNumerators)
+# Update Dec 2023: change to use binary classifications for time signature prediction
+# 0: 4-based time signature (such as 4/4, 2/4), 1: 3-based time signature (such as 3/4, 6/8)
+# we can then infer the numerator and denominator from the beats and downbeats predictions.
 
 # =========== key signature definitions ==========
 # key in sharps in mido
@@ -43,3 +39,27 @@ N_per_beat = 24  # 24 resolution per beat
 max_note_value = 4 * N_per_beat  # 4 beats
 omVocab = N_per_beat  # onset musical vocabulary size
 nvVocab = max_note_value + 1  # note value vocabulary size, 0 is ignored during training
+
+# =========== model state dicts ===========
+model_state_dict_paths = {
+    'beat': {
+        'state_dict_path': os.path.join(os.path.dirname(__file__), '_model_state_dicts/beat/RNNJointBeatModel.pth'),
+        'zenodo_path': 'https://zenodo.org/records/10520196/files/RNNJointBeatModel.pth?download=1',
+    },
+    'quantisation': {
+        'state_dict_path': os.path.join(os.path.dirname(__file__), '_model_state_dicts/quantisation/RNNJointQuantisationModel.pth'),
+        'zenodo_path': 'https://zenodo.org/records/10520196/files/RNNJointQuantisationModel.pth?download=1',
+    },
+    'hand_part': {
+        'state_dict_path': os.path.join(os.path.dirname(__file__), '_model_state_dicts/hand_part/RNNHandPartModel.pth'),
+        'zenodo_path': 'https://zenodo.org/records/10520196/files/RNNHandPartModel.pth?download=1',
+    },
+    'key_signature': {
+        'state_dict_path': os.path.join(os.path.dirname(__file__), '_model_state_dicts/key_signature/RNNKeySignatureModel.pth'),
+        'zenodo_path': 'https://zenodo.org/records/10520196/files/RNNKeySignatureModel.pth?download=1',
+    },
+    'time_signature': {
+        'state_dict_path': os.path.join(os.path.dirname(__file__), '_model_state_dicts/time_signature/CNNTimeSignatureModel.pth'),
+        'zenodo_path': 'https://zenodo.org/records/10520196/files/CNNTimeSignatureModel.pth?download=1',
+    },
+}

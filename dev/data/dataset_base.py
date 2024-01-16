@@ -7,21 +7,27 @@ import random
 import pickle
 from pathlib import Path
 
-from configs import *
-from data.data_augmentation import DataAugmentation
-from pm2s.constants import *
+from configs import training_configs
+# from pm2s.constants import 
 
 class BaseDataset(torch.utils.data.Dataset):
 
-    def __init__(self, workspace, split, from_asap=True):
+    def __init__(self, workspace, split, from_asap=True, feature=None, no_transcribed=False):
 
         # parameters
         self.workspace = workspace
         self.feature_folder = os.path.join(workspace, 'features')
         self.split = split
+        self.feature = feature
+
+        # input checks
+        assert self.split in ['train', 'valid', 'test', 'all']
+        assert self.feature in ['beat', 'quantisation', 'hand_part', 'key_signature', 'time_signature']
 
         # Get metadata by split
         metadata = pd.read_csv('metadata/metadata.csv')
+        if no_transcribed:
+            metadata = metadata[metadata['transcribed'] == False]
         if split == 'all':
             self.metadata = metadata
         else:
@@ -36,17 +42,14 @@ class BaseDataset(torch.utils.data.Dataset):
             self.piece2row[row['piece_id']].append(i)
         self.pieces = list(self.piece2row.keys())
 
-        # Initialise data augmentation
-        self.dataaug = DataAugmentation()
-
     def __len__(self):
         if self.split == 'train' or self.split == 'all':
             # constantly update 200 steps per epoch, not related to training dataset size
-            return batch_size * len(gpus) * 200
+            return training_configs[self.feature]['batch_size'] * len(training_configs[self.feature]['gpus']) * 200
 
         elif self.split == 'valid':
             # by istinct pieces in validation set
-            return batch_size * len(self.piece2row)  # valid dataset size
+            return training_configs[self.feature]['batch_size'] * len(self.piece2row)  # valid dataset size
 
         elif self.split == 'test':
             return len(self.metadata)
@@ -57,8 +60,8 @@ class BaseDataset(torch.utils.data.Dataset):
             piece_id = random.choice(list(self.piece2row.keys()))   # random sampling by piece
             row_id = random.choice(self.piece2row[piece_id])
         elif self.split == 'valid':
-            piece_id = self.pieces[idx // batch_size]    # by istinct pieces in validation set
-            row_id = self.piece2row[piece_id][idx % batch_size % len(self.piece2row[piece_id])]
+            piece_id = self.pieces[idx // training_configs[self.feature]['batch_size']]    # by istinct pieces in validation set
+            row_id = self.piece2row[piece_id][idx % training_configs[self.feature]['batch_size'] % len(self.piece2row[piece_id])]
         elif self.split == 'test':
             row_id = idx
         row = self.metadata.iloc[row_id]
@@ -76,9 +79,9 @@ class BaseDataset(torch.utils.data.Dataset):
         # Randomly sample a segment that is at most max_length long
         if self.split == 'train' or self.split == 'all':
             start_idx = random.randint(0, len(note_sequence)-1)
-            end_idx = start_idx + max_length
+            end_idx = start_idx + training_configs[self.feature]['max_length']
         elif self.split == 'valid':
-            start_idx, end_idx = 0, max_length  # validate on the segment starting with the first note
+            start_idx, end_idx = 0, training_configs[self.feature]['max_length']  # validate on the segment starting with the first note
         elif self.split == 'test':
             start_idx, end_idx = 0, len(note_sequence)  # test on the whole note sequence
 

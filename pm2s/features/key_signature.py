@@ -4,23 +4,21 @@ import numpy as np
 from pm2s.features._processor import MIDIProcessor
 from pm2s.models.key_signature import RNNKeySignatureModel
 from pm2s.io.midi_read import read_note_sequence
-from pm2s.constants import keyNumber2Name
+from pm2s.constants import keyNumber2Name, model_state_dict_paths
 
 class RNNKeySignatureProcessor(MIDIProcessor):
 
-    def __init__(self, model_state_dict_path='_model_state_dicts/key_signature/RNNKeySignatureModel.pth', **kwargs):
-        super().__init__(model_state_dict_path, **kwargs)
+    def __init__(self, state_dict_path=None):
+        if state_dict_path is None:
+            state_dict_path = model_state_dict_paths['key_signature']['state_dict_path']
+        zenodo_path = model_state_dict_paths['key_signature']['zenodo_path']
 
-    def load(self, state_dict_path):
-        if state_dict_path:
-            self._model = RNNKeySignatureModel()
-            self._model.load_state_dict(torch.load(state_dict_path))
-        else:
-            self._model = RNNKeySignatureModel()
+        self._model = RNNKeySignatureModel()
+        self.load(state_dict_path=state_dict_path, zenodo_path=zenodo_path)
 
-    def process(self, midi_file, **kwargs):
-        # Read MIDI file into note sequence
-        note_seq = read_note_sequence(midi_file)
+    def process_note_seq(self, note_seq):
+        # Process note sequence
+
         x = torch.tensor(note_seq).unsqueeze(0)
 
         # Forward pass

@@ -11,7 +11,7 @@ from modules.quantisation import QuantisationModule
 from modules.hand_part import HandPartModule
 from modules.key_signature import KeySignatureModule
 from modules.time_signature import TimeSignatureModule
-from configs import gpus
+from configs import training_configs
 
 
 ## -------------------------
@@ -21,6 +21,9 @@ import torch
 torch.autograd.set_detect_anomaly(True)
 ## END DEBUGGING BLOCK
 ## -------------------------
+
+# Set cuda visable devices
+os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
 
 
 
@@ -55,13 +58,11 @@ def train(args):
         logger=logger,
         log_every_n_steps=50,
         reload_dataloaders_every_n_epochs=True,
-        gpus=gpus,
+        gpus=training_configs[args.feature]['gpus'],
     )
 
     # Train
     trainer.fit(model, data_module)
-
-    
     
 
 if __name__ == '__main__':
