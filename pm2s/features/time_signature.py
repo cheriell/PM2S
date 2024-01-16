@@ -8,16 +8,13 @@ from pm2s.constants import model_state_dict_paths
 
 class CNNTimeSignatureProcessor(MIDIProcessor):
 
-    def __init__(self, **kwargs):
-        model_state_dict_path = model_state_dict_paths['time_signature']['state_dict_path']
-        super().__init__(model_state_dict_path, **kwargs)
+    def __init__(self, state_dict_path=None):
+        if state_dict_path is None:
+            state_dict_path = model_state_dict_paths['time_signature']['state_dict_path']
+        zenodo_path = model_state_dict_paths['time_signature']['zenodo_path']
 
-    def load(self, state_dict_path):
-        if state_dict_path:
-            self._model = CNNTimeSignatureModel()
-            self._model.load_state_dict(torch.load(state_dict_path))
-        else:
-            self._model = CNNTimeSignatureModel()
+        self._model = CNNTimeSignatureModel()
+        self.load(state_dict_path=state_dict_path, zenodo_path=zenodo_path)
 
     def process_note_seq(self, note_seq):
         # Process note sequence

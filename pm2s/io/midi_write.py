@@ -5,7 +5,7 @@ from pm2s.constants import ticks_per_beat
 
 
 
-def write_midi_score(note_sequence, tempo_changes, key_signature_changes, time_signature_changes, midi_file_path):
+def write_midi_score(note_sequence, tempo_changes=[], key_signature_changes=[], time_signature_changes=[], midi_file_path='generated_score.mid'):
     """Write a MIDI file from a note sequence and other information.
 
     Args:

@@ -1,3 +1,4 @@
+import os
 import torch
 import numpy as np
 
@@ -10,17 +11,22 @@ from pm2s.constants import N_per_beat, tolerance, model_state_dict_paths
 
 class RNNJointQuantisationProcessor(MIDIProcessor):
 
-    def __init__(self, **kwargs):
-        model_state_dict_path = model_state_dict_paths['quantisation']['state_dict_path']
-        super().__init__(model_state_dict_path, **kwargs)
+    def __init__(self, state_dict_path=None):
+        if state_dict_path is None:
+            state_dict_path = model_state_dict_paths['quantisation']['state_dict_path']
+        zenodo_path = model_state_dict_paths['quantisation']['zenodo_path']
 
-    def load(self, state_dict_path):
-        if state_dict_path:
-            self._model = RNNJointQuantisationModel()
-            self._model.load_state_dict(torch.load(state_dict_path))
-            self._model.beat_model.load_state_dict(torch.load(model_state_dict_paths['beat']['state_dict_path']))
-        else:
-            self._model = RNNJointQuantisationModel()
+        self._model = RNNJointQuantisationModel()
+        self.load(state_dict_path=state_dict_path, zenodo_path=zenodo_path)
+
+        # Load the beat model
+        if not os.path.exists(model_state_dict_paths['beat']['state_dict_path']):
+            print('Downloading beat model_state_dict from Zenodo...')
+            os.system('wget -O "{}" "{}"'.format(model_state_dict_paths['beat']['state_dict_path'], model_state_dict_paths['beat']['zenodo_path']))
+
+        self._model.beat_model.load_state_dict(torch.load(model_state_dict_paths['beat']['state_dict_path']))
+
+        self._model.eval()
 
     def process_note_seq(self, note_seq):
         # Process note sequence

@@ -1,3 +1,5 @@
+import os
+import torch
 
 from pm2s.io.midi_read import read_note_sequence
 
@@ -5,28 +7,29 @@ class MIDIProcessor(object):
     """
     Abstract base class for processing MIDI data.
     """
-    
-    def __init__(self, model_state_dict_path=None, **kwargs):
+    def __init__(self, state_dict_path=None):
         """
-        Parameters
-        ----------
-        kwargs : dict
-        """
-        self._kwargs = kwargs
-
-        self.load(model_state_dict_path)
-        self._model.eval()
-
-    def load(self, model_state_dict_path, **kwargs):
-        """
-        Load the processor from a model checkpoint file.
+        Initialize the processor.
 
         Parameters
         ----------
-        path : str
-            Path to dump file.
+        state_dict_path : str
+            Path to model checkpoint file.
         """
         raise NotImplementedError("Subclasses must implement this method.")
+
+    def load(self, state_dict_path, zenodo_path):
+        """Load the processor from a model checkpoint file.
+        """
+        if not os.path.exists(state_dict_path):
+            print('Downloading model_state_dict from Zenodo...')
+            if not os.path.exists(os.path.dirname(state_dict_path)):
+                os.makedirs(os.path.dirname(state_dict_path))
+            os.system('wget -O "{}" "{}"'.format(state_dict_path, zenodo_path))
+            
+        self._model.load_state_dict(torch.load(state_dict_path))
+
+        self._model.eval()
 
     def process(self, midi_file, **kwargs):
         # Set model to evaluation mode

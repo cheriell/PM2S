@@ -10,7 +10,7 @@ from pm2s.features.time_signature import CNNTimeSignatureProcessor
 from pm2s.constants import ticks_per_beat, resolution
 from pm2s.io.midi_write import write_midi_score
 
-def crnn_joint_pm2s(performance_midi_file, score_midi_file, start_time=0., end_time=30.):
+def crnn_joint_pm2s(performance_midi_file, score_midi_file, start_time=0., end_time=30., include_time_signature=False, include_key_signature=True):
     """Convert a performance MIDI file into a score MIDI file using CRNN-Joint model.
     NOTE: We use the beat predictions to quantise the performance since it tends to be more accurate than the quantisation predictions.
     """
@@ -135,11 +135,21 @@ def crnn_joint_pm2s(performance_midi_file, score_midi_file, start_time=0., end_t
 
     # Get key signature changes
     key_changes = []
-    for ks in key_signature_changes:
-        key_changes.append((time2tick(ks[0]), ks[1]))
+    if include_key_signature:
+        for ks in key_signature_changes:
+            key_changes.append((time2tick(ks[0]), ks[1]))
 
     # Get time signature changes
-    time_sig_changes = [(time2tick(downbeats[0]), time_signature)]
+    if include_time_signature:
+        time_sig_changes = [(time2tick(downbeats[0]), time_signature)]
+    else:
+        time_sig_changes = []
 
     # Write MIDI file
-    write_midi_score(note_sequence, tempo_changes, key_changes, time_sig_changes, score_midi_file)
+    write_midi_score(
+        note_sequence, 
+        tempo_changes=tempo_changes, 
+        key_signature_changes=key_changes, 
+        time_signature_changes=time_sig_changes, 
+        midi_file_path=score_midi_file
+    )

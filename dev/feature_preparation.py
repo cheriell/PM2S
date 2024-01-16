@@ -289,7 +289,7 @@ if __name__ == '__main__':
     parser.add_argument('--workers', type=int, help='Number of workers for parallel processing, 0 for not using \
                         multiprocessing, minus for using default number of workers', default=mp.cpu_count())
     parser.add_argument('--transcribed', type=int, default=0, help='Use transcribed MIDI files together with original')
-    parser.add_argument('--transcribed_midi_path', type=str, help='Path to the transcribed MIDI files')
+    parser.add_argument('--transcribed_midi_path', type=str, default='', help='Path to the transcribed MIDI files')
     args = parser.parse_args()
 
     # ========= input check =========

@@ -44,22 +44,22 @@ nvVocab = max_note_value + 1  # note value vocabulary size, 0 is ignored during 
 model_state_dict_paths = {
     'beat': {
         'state_dict_path': os.path.join(os.path.dirname(__file__), '_model_state_dicts/beat/RNNJointBeatModel.pth'),
-        'zenodo_path': '',
+        'zenodo_path': 'https://zenodo.org/records/10520196/files/RNNJointBeatModel.pth?download=1',
     },
     'quantisation': {
         'state_dict_path': os.path.join(os.path.dirname(__file__), '_model_state_dicts/quantisation/RNNJointQuantisationModel.pth'),
-        'zenodo_path': '',
+        'zenodo_path': 'https://zenodo.org/records/10520196/files/RNNJointQuantisationModel.pth?download=1',
     },
     'hand_part': {
         'state_dict_path': os.path.join(os.path.dirname(__file__), '_model_state_dicts/hand_part/RNNHandPartModel.pth'),
-        'zenodo_path': '',
+        'zenodo_path': 'https://zenodo.org/records/10520196/files/RNNHandPartModel.pth?download=1',
     },
     'key_signature': {
         'state_dict_path': os.path.join(os.path.dirname(__file__), '_model_state_dicts/key_signature/RNNKeySignatureModel.pth'),
-        'zenodo_path': '',
+        'zenodo_path': 'https://zenodo.org/records/10520196/files/RNNKeySignatureModel.pth?download=1',
     },
     'time_signature': {
         'state_dict_path': os.path.join(os.path.dirname(__file__), '_model_state_dicts/time_signature/CNNTimeSignatureModel.pth'),
-        'zenodo_path': '',
+        'zenodo_path': 'https://zenodo.org/records/10520196/files/CNNTimeSignatureModel.pth?download=1',
     },
 }
