@@ -8,8 +8,8 @@ from configs import training_configs
 
 class QuantisationDataset(BaseDataset):
 
-    def __init__(self, workspace, split):
-        super().__init__(workspace, split, from_asap=False, feature='quantisation', no_transcribed=True)
+    def __init__(self, workspace, split, mode):
+        super().__init__(workspace, split, from_asap=False, feature='quantisation', no_transcribed=True, mode=mode)
         
         # Initialise data augmentation
         self.dataaug = DataAugmentation(feature='quantisation')

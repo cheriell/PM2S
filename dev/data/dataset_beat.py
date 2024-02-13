@@ -9,8 +9,8 @@ from pm2s.constants import *
 
 class BeatDataset(BaseDataset):
 
-    def __init__(self, workspace, split):
-        super().__init__(workspace, split, feature='beat')
+    def __init__(self, workspace, split, mode):
+        super().__init__(workspace, split, feature='beat', mode=mode)
         
         # Initialise data augmentation
         self.dataaug = DataAugmentation(feature='beat')

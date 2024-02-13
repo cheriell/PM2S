@@ -7,10 +7,11 @@ from pm2s.models.blocks import ConvBlock, GRUBlock, LinearOutput
 
 class RNNJointBeatModel(nn.Module):
 
-    def __init__(self, hidden_size=512):
+    def __init__(self, hidden_size=512, omit_input_feature=None):
         super().__init__()
 
-        in_features = get_in_features()
+        in_features = get_in_features(omit_feature=omit_input_feature)
+        self.omit_input_feature = omit_input_feature
 
         self.convs = ConvBlock(in_features=in_features)
 
@@ -24,7 +25,7 @@ class RNNJointBeatModel(nn.Module):
 
     def forward(self, x):
         # x: (batch_size, seq_len, len(features)==4)
-        x = encode_note_sequence(x)
+        x = encode_note_sequence(x, omit_feature=self.omit_input_feature)
 
         x = self.convs(x)  # (batch_size, seq_len, hidden_size)
 

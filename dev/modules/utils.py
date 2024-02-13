@@ -23,13 +23,13 @@ def configure_callbacks(monitor='val_f1', mode='max'):
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
         monitor=monitor,
         mode=mode,
-        save_top_k=3,
+        save_top_k=1,
         filename='{epoch}-{val_loss:.4f}-{val_f1:.4f}',
         save_last=True,
     )
     earlystop_callback = pl.callbacks.EarlyStopping(
         monitor=monitor,
-        patience=200,
+        patience=20,
         mode=mode,
     )
     return [checkpoint_callback, earlystop_callback]

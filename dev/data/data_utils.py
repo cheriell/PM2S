@@ -68,7 +68,7 @@ def get_annotations_from_annot_file(annot_file):
     }
     return annotations
 
-def get_note_sequence_and_annotations_from_midi(midi_file):
+def get_note_sequence_and_annotations_from_midi(midi_file, note_level=True):
     """
     Get beat sequence and annotations from midi file.
     Note sequence is in a list of (pitch, onset, duration, velocity) tuples, in np.array.
@@ -148,9 +148,9 @@ def get_note_sequence_and_annotations_from_midi(midi_file):
         'downbeats': np.array(downbeats),
         'time_signatures': np.array(time_signatures),
         'key_signatures': np.array(key_signatures),
-        'onsets_musical': np.array(onsets_musical),
-        'note_value': np.array(note_values),
-        'hands': np.array(hands) if hands is not None else None,
+        'onsets_musical': np.array(onsets_musical) if note_level else None,
+        'note_value': np.array(note_values) if note_level else None,
+        'hands': np.array(hands) if (hands is not None and note_level) else None,
     }
     return note_sequence, annotations
 

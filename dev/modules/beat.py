@@ -9,9 +9,9 @@ from modules.utils import *
 
 class BeatModule(pl.LightningModule):
 
-    def __init__(self):
+    def __init__(self, omit_input_feature=None):
         super().__init__()
-        self.model = RNNJointBeatModel()
+        self.model = RNNJointBeatModel(omit_input_feature=omit_input_feature)
 
     def forward(self, x):
         return self.model(x)

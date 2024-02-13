@@ -12,13 +12,14 @@ from configs import training_configs
 
 class BaseDataset(torch.utils.data.Dataset):
 
-    def __init__(self, workspace, split, from_asap=True, feature=None, no_transcribed=False):
+    def __init__(self, workspace, split, from_asap=True, feature=None, no_transcribed=False, mode='clean'):
 
         # parameters
         self.workspace = workspace
         self.feature_folder = os.path.join(workspace, 'features')
         self.split = split
         self.feature = feature
+        self.mode = mode
 
         # input checks
         assert self.split in ['train', 'valid', 'test', 'all']
@@ -26,12 +27,21 @@ class BaseDataset(torch.utils.data.Dataset):
 
         # Get metadata by split
         metadata = pd.read_csv('metadata/metadata.csv')
+        if self.mode == 'clean':
+            metadata = metadata[metadata['transcribed'] == False]
+            print('clean metadata size: ', len(metadata))
+        elif self.mode == 'transcribed':
+            metadata = metadata[metadata['transcribed'] == True]
+            print('transcribed metadata size: ', len(metadata))
         if no_transcribed:
             metadata = metadata[metadata['transcribed'] == False]
+            
         if split == 'all':
             self.metadata = metadata
         else:
             self.metadata = metadata[metadata['split'] == split]
+            if split == 'test':
+                self.metadata = self.metadata[self.metadata['transcribed'] == True]
         if not from_asap:
             self.metadata = self.metadata[self.metadata['source'] != 'ASAP']
         self.metadata.reset_index(inplace=True)

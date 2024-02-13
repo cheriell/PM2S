@@ -260,10 +260,11 @@ class FeaturePreparation():
                 # get annotations dict (beats, downbeats, key signatures, time signatures)
                 annotations = get_annotations_from_annot_file(row['annot_file'])
             else:
-                # Get note sequence from performance MIDIs
-                note_sequence = get_note_sequence_from_midi(row['midi_perfm'])
-                # get annotations from ground truth MIDIs
-                _, annotations = get_note_sequence_and_annotations_from_midi(row['annot_file'])
+                if row['transcribed']:
+                    note_sequence = get_note_sequence_from_midi(row['midi_perfm_transcribed'])
+                    _, annotations = get_note_sequence_and_annotations_from_midi(row['annot_file'], note_level=False)
+                else:
+                    note_sequence, annotations = get_note_sequence_and_annotations_from_midi(row['annot_file'])
             
             pickle.dump((note_sequence, annotations), open(row['feature_file'], 'wb'))
 

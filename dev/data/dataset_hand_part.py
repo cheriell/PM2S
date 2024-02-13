@@ -8,8 +8,8 @@ from pm2s.constants import *
 
 class HandPartDataset(BaseDataset):
 
-    def __init__(self, workspace, split):
-        super().__init__(workspace, split, from_asap=False, feature='hand_part', no_transcribed=True)
+    def __init__(self, workspace, split, mode):
+        super().__init__(workspace, split, from_asap=False, feature='hand_part', no_transcribed=True, mode=mode)
         
         # Initialise data augmentation
         self.dataaug = DataAugmentation(feature='hand_part')

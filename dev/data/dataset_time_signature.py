@@ -8,8 +8,8 @@ from pm2s.constants import tolerance
 
 class TimeSignatureDataset(BaseDataset):
 
-    def __init__(self, workspace, split):
-        super().__init__(workspace, split, feature='time_signature')
+    def __init__(self, workspace, split, mode):
+        super().__init__(workspace, split, feature='time_signature', mode=mode)
         
         # Initialise data augmentation
         self.dataaug = DataAugmentation(feature='time_signature')

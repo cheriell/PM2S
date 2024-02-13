@@ -9,6 +9,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--feature', type=str, required=True)
+    parser.add_argument('--mode', type=str, default=None, required=False)  # 'mixed' | 'clean' | 'transcribed', this is for the comparison experiment using transcribed MIDIs.
+
     parser.add_argument('--workspace', type=str, required=True)
     parser.add_argument('--model_state_dict_path', type=str, required=True)
     parser.add_argument('--device', type=str, required=True)

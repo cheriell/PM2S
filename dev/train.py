@@ -29,11 +29,11 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
 
 def train(args):
     # Data
-    data_module = Pm2sDataModule(args, feature=args.feature, full_train=args.full_train)
+    data_module = Pm2sDataModule(args, feature=args.feature, full_train=args.full_train, mode=args.mode)
 
     # Model
     if args.feature == 'beat':
-        model = BeatModule()
+        model = BeatModule(omit_input_feature=args.omit_input_feature)
     elif args.feature == 'quantisation':
         model = QuantisationModule()
     elif args.feature == 'hand_part':
@@ -73,8 +73,13 @@ if __name__ == '__main__':
     parser.add_argument('--ASAP', type=str, help='ASAP dataset directory.')
     parser.add_argument('--A_MAPS', type=str, help='A_MAPS dataset directory.')
     parser.add_argument('--CPM', type=str, help='CPM dataset directory.')
-    parser.add_argument('--feature', type=str, help='Feature type.')
-    parser.add_argument('--full_train', action='store_true', help='Training with the whole dataset or not (only the training set).')
+
+    parser.add_argument('--feature', type=str, help='Feature type. (beat, quantisation, hand_part, key_signature, time_signature)')
+
+    parser.add_argument('--mode', type=str, default=None, help='Mode of training for the transcribed MIDIs. (clean, transcribed, mixed)')
+    parser.add_argument('--omit_input_feature', type=str, default=None, help='Omit input feature for ablation study. (pitch, onset, duration, velocity)')
+
+    parser.add_argument('--full_train', action='store_true', help='Training with the whole dataset or not (i.e. only the training set).')
 
     args = parser.parse_args()
 

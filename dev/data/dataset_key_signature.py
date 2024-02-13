@@ -8,8 +8,8 @@ from pm2s.constants import *
 
 class KeySignatureDataset(BaseDataset):
 
-    def __init__(self, workspace, split):
-        super().__init__(workspace, split, feature='key_signature')
+    def __init__(self, workspace, split, mode):
+        super().__init__(workspace, split, feature='key_signature', mode=mode)
         
         # Initialise data augmentation
         self.dataaug = DataAugmentation(feature='key_signature')

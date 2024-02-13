@@ -11,6 +11,7 @@ def evaluate_beat_prediction(args):
     testset = BeatDataset(
         workspace=args.workspace, 
         split='test',
+        mode=args.mode,
     )
     model = RNNJointBeatModel()
     model.load_state_dict(torch.load(args.model_state_dict_path))
