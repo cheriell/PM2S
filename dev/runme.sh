@@ -35,9 +35,9 @@ transcribed_midi_path="/import/c4dm-05/ll307/repositories/pipeline-A2S/transcrib
 # 	python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature $feature --full_train
 # done
 
-python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature 'beat' --mode 'mixed' --omit_input_feature duration
-python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature 'beat' --mode 'clean' --omit_input_feature duration
-python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature 'beat' --mode 'transcribed' --omit_input_feature duration
+# python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature 'beat' --mode 'mixed' --omit_input_feature duration
+# python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature 'beat' --mode 'clean' --omit_input_feature duration
+# python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature 'beat' --mode 'transcribed' --omit_input_feature duration
 
 # ========================================================
 # Convert model checkpoint to model state dict
@@ -45,41 +45,44 @@ python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM
 # Change the model_checkpoint_path to your own trained model checkpoint path. If model_state_dict_path is not specified, this will save the model to the default path (_model_state_dict.pth)
 # python3 model_checkpoint_2_state_dict.py \
 #     --feature 'beat' \
-#     --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-transcribed/mlruns/1/886c4e78262a40a6be39c6d57761b675/checkpoints/epoch=96-val_loss=3.9793-val_f1=0.7616.ckpt \
-#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/beat/beat_model_transcribed.pth \
+#     --omit_input_feature 'duration' \
+#     --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-transcribed/mlruns/1/0f12ae011bce4993b1d9e4c4144b7712/checkpoints/epoch=146-val_loss=3.6488-val_f1=0.8093.ckpt \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/beat/beat_model_mixed_omit_offset.pth \
 
 # ========================================================
 # Evaluation
 # ========================================================
 # This will evaluate on both clean performance MIDI and transcribed MIDI (from audio recordings) together.
-# python3 evaluate.py \
-#     --feature beat \
-#     --workspace $WORKSPACE \
-#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/beat/beat_model_temp.pth \
-#     --device cuda:0 \
+python3 evaluate.py \
+    --feature beat \
+    --mode mixed \
+    --omit_input_feature duration \
+    --workspace $WORKSPACE \
+    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/beat/beat_model_transcribed_omit_offset.pth \
+    --device cuda:0 \
 
 # python3 evaluate.py \
 #     --feature time_signature \
 #     --workspace $WORKSPACE \
-#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/time_signature/CNNTimeSignatureModel.pth \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/time_signature/CNNTimeSignatureModel.pth \
 #     --device cuda:0 \
 
 # python3 evaluate.py \
 #     --feature key_signature \
 #     --workspace $WORKSPACE \
-#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/key_signature/RNNKeySignatureModel.pth \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/key_signature/RNNKeySignatureModel.pth \
 #     --device cuda:0 \
 
 # python3 evaluate.py \
 #     --feature hand_part \
 #     --workspace $WORKSPACE \
-#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/hand_part/RNNHandPartModel.pth \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/hand_part/RNNHandPartModel.pth \
 #     --device cuda:0 \
 
 # python3 evaluate.py \
 #     --feature quantisation \
 #     --workspace $WORKSPACE \
-#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/_model_state_dicts/quantisation/RNNJointQuantisationModel.pth \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/quantisation/RNNJointQuantisationModel.pth \
 #     --device cuda:0 \
 
 # For MV2H evaluation, we use:

@@ -31,9 +31,9 @@ class RNNJointBeatProcessor(MIDIProcessor):
         downbeat_probs = downbeat_probs.squeeze(0).detach().numpy()
         onsets = note_seq[:, 1]
 
-        beats = self.pps(beat_probs, downbeat_probs, onsets)
+        beats, downbeats = self.pps(beat_probs, downbeat_probs, onsets)
             
-        return beats
+        return beats, downbeats
 
     @staticmethod
     def pps(beat_probs, downbeat_probs, onsets, prob_thresh=0.5, penalty=1.0):
@@ -53,6 +53,8 @@ class RNNJointBeatProcessor(MIDIProcessor):
         -------
         beats: np.ndarray, shape=(n_beats,)
             beat times
+        downbeats: np.ndarray, shape=(n_downbeats,)
+            downbeat times
         """
         N_notes = len(beat_probs)
 

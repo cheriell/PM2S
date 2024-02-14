@@ -75,3 +75,8 @@ class BeatDataset(BaseDataset):
             ibis, 
             length,
         )
+
+    def __get_beat_annotations__(self, idx):
+        row = self._sample_row(idx)
+        _, annotations = self._load_data(row)
+        return annotations['beats'], annotations['downbeats']
