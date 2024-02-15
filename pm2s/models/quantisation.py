@@ -8,7 +8,7 @@ from pm2s.models.beat import RNNJointBeatModel
 
 class RNNJointQuantisationModel(nn.Module):
 
-    def __init__(self, beat_model_state_dict=model_state_dict_paths['beat']['state_dict_path'], hidden_size=512):
+    def __init__(self, hidden_size=512, beat_model_state_dict=model_state_dict_paths['beat']['state_dict_path'], beat_type='estimated'):
 
         super().__init__()
 
@@ -24,13 +24,31 @@ class RNNJointQuantisationModel(nn.Module):
         self.out_value = LinearOutput(in_features=hidden_size, out_features=nvVocab, activation_type='softmax')
 
         # load beat model and freeze its parameters
+        print('============================================================')
         self.beat_model = RNNJointBeatModel()
         self.beat_model.load_state_dict(torch.load(beat_model_state_dict))
-        for param in self.beat_model.parameters():
+        for name, param in self.beat_model.named_parameters():
             param.requires_grad = False
+            print(name, param.requires_grad)
+        print()
+        print('============================================================')
 
-    def forward(self, x):
-        y_beat, y_downbeat, _ = self.beat_model(x)  # (batch_size, seq_len)
+        self.beat_type = beat_type
+
+    def forward(self, x, x_beat=None):
+        # Get x_beat
+        if x_beat is not None:
+            if self.beat_type == 'estimated':
+                x_beat, _, _ = self.beat_model(x)  # (batch_size, seq_len)
+            elif self.beat_type == 'ground_truth':
+                pass
+            elif self.beat_type == 'mixed':
+                if torch.rand(1) < 0.5:
+                    x_beat, _, _ = self.beat_model(x)
+            else:
+                raise ValueError('Invalid beat type.')
+        else:
+            x_beat, _, _ = self.beat_model(x)
 
         # x: (batch_size, seq_len, len(features)==4)
         x = encode_note_sequence(x)
@@ -41,14 +59,15 @@ class RNNJointQuantisationModel(nn.Module):
         x_gru_value = self.gru_value(x_conv_value) # (batch_size, seq_len, hidden_size)
         y_value = self.out_value(x_gru_value) # (batch_size, seq_len, noteValueVocab)
         
-        x_concat_onset = torch.cat((x_conv_onset, y_beat.unsqueeze(2), y_value), dim=2) # (batch_size, seq_len, hidden_size + 1 + noteValueVocab)
+        x_concat_onset = torch.cat((x_conv_onset, x_beat.unsqueeze(2), y_value), dim=2) # (batch_size, seq_len, hidden_size + 1 + noteValueVocab)
         x_gru_onset = self.gru_onset(x_concat_onset) # (batch_size, seq_len, hidden_size)
         y_onset = self.out_onset(x_gru_onset) # (batch_size, seq_len, onsetVocab)
 
         y_onset = y_onset.transpose(1, 2) # (batch_size, onsetVocab, seq_len)
         y_value = y_value.transpose(1, 2) # (batch_size, noteValueVocab, seq_len)
 
-        return y_beat, y_downbeat, y_onset, y_value
+        # return y_beat, y_downbeat, y_onset, y_value
+        return y_onset, y_value
 
 
 

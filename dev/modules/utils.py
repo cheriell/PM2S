@@ -6,7 +6,7 @@ from sklearn.metrics import classification_report
 
 def configure_optimizers(module, lr=1e-3, step_size=50):
     optimizer = torch.optim.AdamW(
-        module.parameters(),
+        filter(lambda p: p.requires_grad, module.parameters()),
         lr=lr,
         betas=(0.8, 0.8),
         eps=1e-4,

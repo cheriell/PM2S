@@ -1,5 +1,6 @@
 # Unit test for the dev module
-
+import warnings
+warnings.filterwarnings('ignore')
 import unittest
 import os
 import sys

@@ -10,31 +10,43 @@ from data.dataset_time_signature import TimeSignatureDataset
 
 class Pm2sDataModule(pl.LightningDataModule):
 
-    def __init__(self, args, feature='beat', full_train=True, mode='clean'):
+    def __init__(self, args):
         super().__init__()
         
-        # Parameters from input arguments
+        # Paths
         self.workspace = args.workspace
         self.ASAP = args.ASAP
         self.A_MAPS = args.A_MAPS
         self.CPM = args.CPM
-        self.feature = feature
-        self.full_train = full_train
-        self.mode = mode
+
+        # Output feature type
+        self.feature = args.feature
+
+        # For training beat tracking model (with transcribed MIDI files)
+        self.mode = args.mode
+
+        # Using full training set?
+        self.full_train = args.full_train
 
     def _get_dataset(self, split):
         if self.feature == 'beat':
             dataset = BeatDataset(self.workspace, split, self.mode)
+
         elif self.feature == 'quantisation':
-            dataset = QuantisationDataset(self.workspace, split, self.mode)
+            dataset = QuantisationDataset(self.workspace, split, mode=None)
+
         elif self.feature == 'hand_part':
             dataset = HandPartDataset(self.workspace, split, self.mode)
+
         elif self.feature == 'key_signature':
             dataset = KeySignatureDataset(self.workspace, split, self.mode)
+
         elif self.feature == 'time_signature':
             dataset = TimeSignatureDataset(self.workspace, split, self.mode)
+
         else:
             raise ValueError('Unknown feature: {}'.format(self.feature))
+        
         return dataset
 
     def train_dataloader(self):

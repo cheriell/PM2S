@@ -4,17 +4,17 @@
 # Workspace, dataset, and evaluation tools
 # ========================================================
 # Modify the following paths to your own workspace
-WORKSPACE="/import/c4dm-05/ll307/workspace/PM2S-transcribed"
+WORKSPACE=/import/c4dm-05/ll307/workspace/PM2S-transcribed
 
 # Modify the following paths to your own dataset directory
-ASAP="/import/c4dm-05/ll307/datasets/asap-dataset-note_alignments"
-A_MAPS="/import/c4dm-05/ll307/datasets/A-MAPS_1.1"
-CPM="/import/c4dm-05/ll307/datasets/ClassicalPianoMIDI-dataset"
-ACPAS="/import/c4dm-05/ll307/datasets/ACPAS-dataset"
+ASAP=/import/c4dm-05/ll307/datasets/asap-dataset-note_alignments
+A_MAPS=/import/c4dm-05/ll307/datasets/A-MAPS_1.1
+CPM=/import/c4dm-05/ll307/datasets/ClassicalPianoMIDI-dataset
+ACPAS=/import/c4dm-05/ll307/datasets/ACPAS-dataset
 
 # This is the path to the transcribed midi files, from the ACPAS audio recordings, 
 # using high-resolution piano transcription model.
-transcribed_midi_path="/import/c4dm-05/ll307/repositories/pipeline-A2S/transcribed_midi"
+transcribed_midi_path=/import/c4dm-05/ll307/repositories/pipeline-A2S/transcribed_midi
 
 # ========================================================
 # Feature preparation 
@@ -35,17 +35,18 @@ transcribed_midi_path="/import/c4dm-05/ll307/repositories/pipeline-A2S/transcrib
 # 	python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature $feature --full_train
 # done
 
-# python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature 'beat' --mode 'mixed' --omit_input_feature duration
-# python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature 'beat' --mode 'clean' --omit_input_feature duration
-# python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature 'beat' --mode 'transcribed' --omit_input_feature duration
+python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature quantisation --beat_type ground_truth
+python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature quantisation --beat_type estimated
+python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature quantisation --beat_type mixed
+
 
 # ========================================================
 # Convert model checkpoint to model state dict
 # ========================================================
 # Change the model_checkpoint_path to your own trained model checkpoint path. If model_state_dict_path is not specified, this will save the model to the default path (_model_state_dict.pth)
 # python3 model_checkpoint_2_state_dict.py \
-#     --feature 'beat' \
-#     --omit_input_feature 'duration' \
+#     --feature beat \
+#     --omit_input_feature duration \
 #     --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-transcribed/mlruns/1/0f12ae011bce4993b1d9e4c4144b7712/checkpoints/epoch=146-val_loss=3.6488-val_f1=0.8093.ckpt \
 #     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/beat/beat_model_mixed_omit_offset.pth \
 
@@ -53,13 +54,13 @@ transcribed_midi_path="/import/c4dm-05/ll307/repositories/pipeline-A2S/transcrib
 # Evaluation
 # ========================================================
 # This will evaluate on both clean performance MIDI and transcribed MIDI (from audio recordings) together.
-python3 evaluate.py \
-    --feature beat \
-    --mode mixed \
-    --omit_input_feature duration \
-    --workspace $WORKSPACE \
-    --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/beat/beat_model_transcribed_omit_offset.pth \
-    --device cuda:0 \
+# python3 evaluate.py \
+#     --feature beat \
+#     --mode mixed \
+#     --omit_input_feature duration \
+#     --workspace $WORKSPACE \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/beat/beat_model_transcribed_omit_offset.pth \
+#     --device cuda:0 \
 
 # python3 evaluate.py \
 #     --feature time_signature \
