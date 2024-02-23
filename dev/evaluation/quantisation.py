@@ -3,7 +3,6 @@ import torch
 from data.dataset_quantisation import QuantisationDataset
 from pm2s.models.quantisation import RNNJointQuantisationModel
 from modules.utils import classification_report_framewise
-from pm2s.constants import model_state_dict_paths
 
 
 def evaluate_quantisation_prediction(args):
@@ -11,11 +10,10 @@ def evaluate_quantisation_prediction(args):
     testset = QuantisationDataset(
         workspace=args.workspace,
         split='test',
-        mode=args.mode,
+        mode=None,
     )
     model = RNNJointQuantisationModel()
     model.load_state_dict(torch.load(args.model_state_dict_path))
-    model.beat_model.load_state_dict(torch.load(model_state_dict_paths['beat']['state_dict_path']))
     model = model.to(args.device)
     model.eval()
 
@@ -26,11 +24,11 @@ def evaluate_quantisation_prediction(args):
         print('testing sample {}/{}'.format(i+1, len(testset)), end='\r')
 
         # Get data
-        note_sequence, onsets, note_values, length = testset[i]
+        note_sequence, _, onsets, note_values, length = testset[i]
 
         # Get prediction
         note_sequence = torch.Tensor(note_sequence).to(args.device).float().unsqueeze(0)
-        _, _, probs_onset, probs_value = model(note_sequence)
+        probs_onset, probs_value = model(note_sequence)
         
         # Post-processing
         onset_positions_idx = probs_onset[0].topk(1, dim=0)[1].squeeze(0) # (n_notes,)

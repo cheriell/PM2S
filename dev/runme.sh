@@ -35,20 +35,19 @@ transcribed_midi_path=/import/c4dm-05/ll307/repositories/pipeline-A2S/transcribe
 # 	python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature $feature --full_train
 # done
 
-python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature quantisation --beat_type ground_truth
-python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature quantisation --beat_type estimated
-python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature quantisation --beat_type mixed
+# python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature quantisation --beat_type ground_truth
+# python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature quantisation --beat_type estimated
+# python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM --feature quantisation --beat_type mixed
 
 
 # ========================================================
 # Convert model checkpoint to model state dict
 # ========================================================
-# Change the model_checkpoint_path to your own trained model checkpoint path. If model_state_dict_path is not specified, this will save the model to the default path (_model_state_dict.pth)
+# # Change the model_checkpoint_path to your own trained model checkpoint path. If model_state_dict_path is not specified, this will save the model to the default path (_model_state_dict.pth)
 # python3 model_checkpoint_2_state_dict.py \
-#     --feature beat \
-#     --omit_input_feature duration \
-#     --model_checkpoint_path /import/c4dm-05/ll307/workspace/PM2S-transcribed/mlruns/1/0f12ae011bce4993b1d9e4c4144b7712/checkpoints/epoch=146-val_loss=3.6488-val_f1=0.8093.ckpt \
-#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/beat/beat_model_mixed_omit_offset.pth \
+#     --feature quantisation \
+#     --model_checkpoint_path $model_estimated \
+#     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/temp.pth
 
 # ========================================================
 # Evaluation
@@ -84,7 +83,7 @@ python3 train.py --workspace $WORKSPACE --ASAP $ASAP --A_MAPS $A_MAPS --CPM $CPM
 #     --feature quantisation \
 #     --workspace $WORKSPACE \
 #     --model_state_dict_path /import/c4dm-05/ll307/repositories/PM2S/pm2s/_model_state_dicts/quantisation/RNNJointQuantisationModel.pth \
-#     --device cuda:0 \
+#     --device cuda:0
 
 # For MV2H evaluation, we use:
 # - `crnn_joint_pm2s()` to generate the score MIDI file, using the trained model. We didn't include time signature in the score MIDI file for Mv2H evaluation.

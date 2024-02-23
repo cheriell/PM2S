@@ -90,7 +90,7 @@ if __name__ == '__main__':
     parser.add_argument('--omit_input_feature', type=str, default=None, help='Omit input feature for ablation study. (pitch, onset, duration, velocity.) None for no ablation study.')
 
     # For Quantisation (RNNJointQuantisationModel)
-    parser.add_argument('--beat_type', type=str, default='ground_truth', help='Type of beat to be used for training. (ground_truth, estimated, mixed)')
+    parser.add_argument('--beat_type', type=str, default='estimated', help='Type of beat to be used for training. (ground_truth, estimated, mixed)')
 
     ####################################################
     # For traing with the whole dataset

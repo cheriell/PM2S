@@ -24,14 +24,10 @@ class RNNJointQuantisationModel(nn.Module):
         self.out_value = LinearOutput(in_features=hidden_size, out_features=nvVocab, activation_type='softmax')
 
         # load beat model and freeze its parameters
-        print('============================================================')
         self.beat_model = RNNJointBeatModel()
         self.beat_model.load_state_dict(torch.load(beat_model_state_dict))
         for name, param in self.beat_model.named_parameters():
             param.requires_grad = False
-            print(name, param.requires_grad)
-        print()
-        print('============================================================')
 
         self.beat_type = beat_type
 

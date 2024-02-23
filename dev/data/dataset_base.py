@@ -41,7 +41,10 @@ class BaseDataset(torch.utils.data.Dataset):
         else:
             self.metadata = metadata[metadata['split'] == split]
             if split == 'test':
-                self.metadata = self.metadata[self.metadata['transcribed'] == True]
+                if mode == 'clean' or mode is None:
+                    self.metadata = self.metadata[self.metadata['transcribed'] == False]
+                else:
+                    self.metadata = self.metadata[self.metadata['transcribed'] == True]
         if not from_asap:
             self.metadata = self.metadata[self.metadata['source'] != 'ASAP']
         self.metadata.reset_index(inplace=True)
