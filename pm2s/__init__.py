@@ -1,4 +1,4 @@
 
-__version__ = 'v0.0.0'
+__version__ = 'v1.1'
 
-from .pm2s import crnn_joint_pm2s
+from .pm2s import CRNNJointPM2S

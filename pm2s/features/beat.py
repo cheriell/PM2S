@@ -18,7 +18,15 @@ class RNNJointBeatProcessor(MIDIProcessor):
         self._model = RNNJointBeatModel()
         self.load(state_dict_path=state_dict_path, zenodo_path=zenodo_path)
         
-    def process_note_seq(self, note_seq):
+    def process_note_seq(self, 
+            note_seq, 
+            pps_args = {
+                'prob_thresh': 0.5,
+                'penalty': 1.0,
+                'merge_downbeats': True,
+                'method': 'dp',
+            },
+        ):
         # Process note sequence
 
         x = torch.tensor(note_seq).unsqueeze(0)
@@ -31,12 +39,20 @@ class RNNJointBeatProcessor(MIDIProcessor):
         downbeat_probs = downbeat_probs.squeeze(0).detach().numpy()
         onsets = note_seq[:, 1]
 
-        beats = self.pps(beat_probs, downbeat_probs, onsets)
+        beats = self.pps(beat_probs, downbeat_probs, onsets, **pps_args)
             
         return beats
 
     @staticmethod
-    def pps(beat_probs, downbeat_probs, onsets, prob_thresh=0.5, penalty=1.0):
+    def pps(
+            beat_probs, 
+            downbeat_probs, 
+            onsets, 
+            prob_thresh=0.5, 
+            penalty=1.0, 
+            merge_downbeats=True, 
+            method='dp'
+        ):
         """
         Post-processing with dynamic programming.
 
@@ -101,7 +117,10 @@ class RNNJointBeatProcessor(MIDIProcessor):
         beats = np.concatenate([beats, beats_to_merge])
         beats = np.sort(beats)
 
-        beats = RNNJointBeatProcessor.beat_complement_dp(beats, penalty)
+        if method == 'dp':
+            beats = RNNJointBeatProcessor.beat_complement_dp(beats, penalty)
+        elif method == None:
+            pass
 
         return beats, downbeats
 
@@ -169,7 +188,9 @@ class RNNJointBeatProcessor(MIDIProcessor):
         beats = beats_dp[x_best]
         return np.array(beats)
 
-
+    @staticmethod
+    def kmeans_beat_filter(beats, n_clusters):
+        pass
 
 
 

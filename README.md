@@ -1,6 +1,6 @@
 # Performance MIDI-to-Score Conversion
 
-This is the official implementation for our ISMIR 2022 paper [Performance MIDI-to-Score Conversion by Neural Beat Tracking](https://www.turing.ac.uk/research/publications/performance-midi-score-conversion-neural-beat-tracking).
+This is the implementation for our ISMIR 2022 paper [Performance MIDI-to-Score Conversion by Neural Beat Tracking](https://www.turing.ac.uk/research/publications/performance-midi-score-conversion-neural-beat-tracking).
 
 ## Environments
 
